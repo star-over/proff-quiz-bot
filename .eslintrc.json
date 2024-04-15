@@ -1,0 +1,70 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": ["airbnb-base"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json"],
+    "ecmaVersion": 13,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import"
+  ],
+  "settings": {
+    "import/parsers": { "@typescript-eslint/parser": [".js", ".jsx", ".ts", ".tsx"] },
+    "import/resolver": {
+      "typescript": { "alwaysTryTypes": true },
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "moduleDirectory": [ "src", "node_modules" ]
+      }
+    }
+  },
+  "rules": {
+    "quotes": ["warn", "double"],
+    "no-console": "off",
+    "array-bracket-spacing": "warn",
+    "quote-props": "warn",
+    "indent": "warn",
+    "comma-dangle": "warn",
+    "spaced-comment": "warn",
+    "space-before-function-paren": "warn",
+    "semi": "warn",
+    "@typescript-eslint/no-extra-semi": "warn",
+    "import/extensions": "off",
+    "@typescript-eslint/no-floating-promises": "warn",
+    "padded-blocks": "warn",
+    "object-curly-newline": ["warn", {
+      "ObjectExpression": "always",
+      "ObjectPattern": { "multiline": true },
+      "ImportDeclaration": "never",
+      "ExportDeclaration": { "multiline": true, "minProperties": 6 }
+  }],
+  "no-use-before-define": ["error", {
+    "functions": false,
+    "classes": true,
+    "variables": true,
+    "allowNamedExports": false
+}]
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+      ],
+      "parserOptions": {
+        "project": ["./tsconfig.json"] // Specify it only for TypeScript files
+      },
+      "rules": {
+        "@typescript-eslint/no-extra-semi": "warn",
+        "@typescript-eslint/no-floating-promises": "warn"
+      }
+    }
+  ]
+}
