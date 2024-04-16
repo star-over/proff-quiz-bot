@@ -8,14 +8,12 @@ export async function render(html: string) {
     const page = await browser.newPage();
     await page.setViewport({ width: 650, height: 100, deviceScaleFactor: 3 });
     await page.setContent(html);
-
     await page.addScriptTag({ path: "./app/puppeteer/tailwind.js" }); // tailwind
     await page.addScriptTag({ path: "./tailwind.config.js" }); // tailwind
 
     const rootEl = await page.$("#root");
     if (rootEl) {
       return await rootEl.screenshot();
-      // throw new Error("element not found");
     }
 
     // fallback to whole page screenshort
