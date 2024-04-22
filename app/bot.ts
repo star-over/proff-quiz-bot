@@ -4,8 +4,7 @@ import { postPicturePoll } from "./post-picture-poll.js";
 import { postPoll } from "./post-poll.js";
 import { postSpoiler } from "./post-spoiler.js";
 
-const botName = process.env.BOT_NAME as string;
-const botDescription = process.env.BOT_DESCRIPTION as string;
+
 const botToken = process.env.BOT_TOKEN as string
 const quizzes = testQuiz;
 
@@ -18,13 +17,14 @@ function getQuiz(index: number) {
 
 bot.command("start", (ctx) => ctx.reply("Профессиональное тестирование"));
 bot.on("message", async (ctx) => {
+console.log("🚀 > bot.on > ctx:", ctx.chat);
 
   const quiz = getQuiz(0);
 
-  // await postPicturePoll(ctx, { quiz, botName, botDescription});
-  await postPoll(ctx, { quiz });
-  // await postSpoiler(ctx, { quiz });
+  // await postPicturePoll(ctx, quiz);
+  // await postPoll(ctx, quiz);
+  await postSpoiler(ctx, quiz);
 
 });
 
-bot.start().then().catch(Error);;
+bot.start();

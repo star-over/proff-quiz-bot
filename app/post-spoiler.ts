@@ -1,19 +1,29 @@
-export async function postSpoiler(ctx, { quiz }) {
+import { proxies } from "./lib/utils.js";
+
+export async function postSpoiler(ctx, quiz) {
 
   const { question, answers, reference, topic } = quiz;
-
-  const correctAnswer = answers
+  const pollAnswers = answers
+    .map((answer, i) => (
+      {
+        ...answer,
+        text: `${proxies[i]}. ${answer.answer}`
+      }
+    ));
+  const correctAnswer = pollAnswers
     .find(({ isCorrect }) => isCorrect)
-    .answer;
+    .text;
 
   const message = [
     `Тема: <b>${topic}</b>`,
     "",
     question,
     "",
+    pollAnswers.map(({ text }) => text).join("\n"),
+    "",
     "Ответ:",
     `<tg-spoiler>\
-    ${correctAnswer.padStart(30, " ")}\
+    ${correctAnswer.padStart(20, " ")}\
     <blockquote>${reference}</blockquote>\
     </tg-spoiler>`,
   ].join("\n");

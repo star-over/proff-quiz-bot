@@ -1,6 +1,6 @@
-import { extractText } from "./utils.js";
+import { extractText } from "./lib/utils.js";
 
-export async function postPoll(ctx, { quiz }) {
+export async function postPoll(ctx, quiz) {
 
   const { question, answers, reference, topic } = quiz;
   const pollQuestion = `Тема: ${topic}\n\n${extractText(question)}`;

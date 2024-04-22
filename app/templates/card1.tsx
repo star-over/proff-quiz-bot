@@ -1,6 +1,6 @@
 import React from "react"
 import { Layout } from "./layout.js"
-import { cn } from "../utils.js"
+import { cn } from "../lib/utils.js"
 
 function IsCorrect({ isCorrect, children }) {
   return (
