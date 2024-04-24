@@ -17,13 +17,13 @@ function getQuiz(index: number) {
 
 bot.command("start", (ctx) => ctx.reply("Профессиональное тестирование"));
 bot.on("message", async (ctx) => {
-console.log("🚀 > bot.on > ctx:", ctx.chat);
+console.log("🚀 > bot.on > ctx:", ctx.chat.id);
 
   const quiz = getQuiz(0);
 
   // await postPicturePoll(ctx, quiz);
-  // await postPoll(ctx, quiz);
-  await postSpoiler(ctx, quiz);
+  await postPoll(ctx, quiz);
+  // await postSpoiler(ctx, quiz);
 
 });
 

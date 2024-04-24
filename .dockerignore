@@ -1,0 +1,23 @@
+
+
+.*
+dockerfile
+docker-compose.yml
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# dotenv environment variable files
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+.env
+
+
+### VisualStudioCode ###
+.vscode
