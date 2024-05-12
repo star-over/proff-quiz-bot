@@ -11,3 +11,8 @@ export function cn(...inputs: any[]) {
 export function extractText(html: string) {
   return html.replace(/<[^>]+>/g, '');
 };
+
+export function getRandom(items) {
+  // "|" for a kinda "int div"
+  return items[items.length * Math.random() | 0];
+}

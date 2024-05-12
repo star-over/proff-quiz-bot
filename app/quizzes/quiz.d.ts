@@ -5,15 +5,18 @@ export type TQuizBundle = TQuiz[];
 export type TQuiz = {
   id: number;
   isActive: boolean;
+  block?: string | null;
   topic: string;
-  question: string;
-  answers: TAnswers;
+  level?: string | null;
   reference?: string | null;
+  style?: string | null;
+  question: string;
+  variants: TVariants;
 }
 
-export type TAnswers = TAnswer[];
-export type TAnswer = {
-  answer: string;
-  isCorrect: boolean;
+export type TVariants = TVariant[];
+export type TVariant = {
+  variant: string;
+  key: boolean;
   proxy?: string;
 }
