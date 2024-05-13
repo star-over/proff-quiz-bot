@@ -7,4 +7,5 @@ services:
       - .env
     # volumes:
       # - ".:/app"
+    restart: on-failure
     command: npm run docker_node
