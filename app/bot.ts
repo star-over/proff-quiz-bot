@@ -5,6 +5,7 @@ import { postPoll } from "./post-poll.js";
 import { postSpoiler } from "./post-spoiler.js";
 import { getRandom } from "./lib/utils.js";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
+import { postMessagePoll } from "./post-message-poll.js";
 
 
 const botToken = process.env.BOT_TOKEN as string
@@ -17,12 +18,16 @@ bot.on("message", async (ctx) => {
 
   const quizzes = allQuizzes
     .filter(({ style }) => style === "one")
-    .filter(({ variants }) => variants.every(({ variant }) => variant.length <= 100))
-    .filter(({ block, topic, question }) => block.length + topic.length + question.length < 275)
+    .filter(({ answers }) => (2 <= answers.length) && (answers.length <= 10))
+    .filter(({ answers }) => answers.every(({ answer }) => answer.length <= 100))
+    .filter(({ explanation }) => explanation.length <= 200)
+    .filter(({ topic, question }) => topic.length + question.length > 250)
   const quiz = getRandom(quizzes)
 
+
   // await postPicturePoll(ctx, quiz);
-  await postPoll(ctx, quiz);
+  // await postPoll(ctx, quiz);
+  await postMessagePoll(ctx, quiz);
   // await postSpoiler(ctx, quiz);
 
 });

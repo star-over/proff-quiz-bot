@@ -3,7 +3,7 @@
   "scripts": {
     "build": "tsc",
     "tsx": "tsx --env-file=.env ./app/bot.ts ",
-    "dev": "tsx --watch --trace-warnings --env-file=.env ./app/bot.ts",
+    "dev": "tsx --watch --trace-warnings --env-file=.env.dev ./app/bot.ts",
     "start": "tsc && node --env-file=.env ./dist/app/bot.js",
     "docker_node": "node --trace-deprecation ./dist/app/bot.js",
     "dev_old": "node --watch --trace-warnings --env-file=.env --loader=ts-node/esm ./app/bot.ts"
