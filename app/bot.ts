@@ -20,15 +20,18 @@ bot.on("message", async (ctx) => {
     .filter(({ style }) => style === "one")
     .filter(({ answers }) => (2 <= answers.length) && (answers.length <= 10))
     .filter(({ answers }) => answers.every(({ answer }) => answer.length <= 100))
-    .filter(({ explanation }) => explanation.length <= 200)
-    .filter(({ topic, question }) => topic.length + question.length > 250)
+  // .filter(({ reference }) => reference.length <= 200)
+  // .filter(({ topic, question }) => topic.length + question.length < 250)
   const quiz = getRandom(quizzes)
 
-
   // await postPicturePoll(ctx, quiz);
-  // await postPoll(ctx, quiz);
-  await postMessagePoll(ctx, quiz);
   // await postSpoiler(ctx, quiz);
+  const pollQuestionSize = quiz.topic.length + quiz.question.length;
+  if (pollQuestionSize < 250) {
+    await postPoll(ctx, quiz);
+  } else {
+    await postMessagePoll(ctx, quiz);
+  }
 
 });
 

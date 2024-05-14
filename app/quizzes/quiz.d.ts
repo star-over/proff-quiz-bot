@@ -14,7 +14,7 @@ export type TQuiz = {
   block?: string | null;
   topic: string;
   level?: string | null;
-  explanation?: string | null;
+  reference?: string | null;
   style?: string | null;
   question: string;
   answers: TAnswers;
