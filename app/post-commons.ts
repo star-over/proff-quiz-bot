@@ -1,5 +1,5 @@
-import { truncate } from "./lib/utils";
-import { TAnswers } from "./quizzes/quiz";
+import { truncate } from "./lib/utils.js";
+import { TAnswers } from "./quizzes/quiz.js";
 
 export const messageConfig = {
   parse_mode: "HTML",
