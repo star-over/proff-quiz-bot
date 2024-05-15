@@ -29184,22 +29184,6 @@ export const allQuizzes: TQuizBundle =
           {
               "isCorrect": false,
               "answer": "Нет"
-          },
-          {
-              "isCorrect": false,
-              "answer": "Да"
-          },
-          {
-              "isCorrect": true,
-              "answer": "Да, если иное не предусмотрено договором"
-          },
-          {
-              "isCorrect": false,
-              "answer": "Да, если договор составлен до начала 2021 года"
-          },
-          {
-              "isCorrect": false,
-              "answer": "Нет"
           }
       ]
   },

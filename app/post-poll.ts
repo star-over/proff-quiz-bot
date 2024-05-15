@@ -1,4 +1,5 @@
-import { extractText, makeExplanation } from "./lib/utils.js";
+import { extractText } from "./lib/utils.js";
+import { getAnswers, makePollConfig } from "./post-commons.js";
 import { TQuiz } from "./quizzes/quiz.js";
 
 export async function postPoll(ctx, quiz: TQuiz) {
@@ -11,15 +12,8 @@ export async function postPoll(ctx, quiz: TQuiz) {
     `[id:${id}]`,
   ].join("\n");
 
-  const pollAnswers = answers.map(({ answer }) => answer ?? "");
-  const correct_option_id = answers.findIndex(({ isCorrect }) => isCorrect);
-  const explanation = makeExplanation(answers, correct_option_id, reference);
-  const pollConfig = {
-    type: "quiz",
-    correct_option_id,
-    explanation,
-    explanation_parse_mode: "HTML",
-  } as const;
+  const pollAnswers = getAnswers(answers);
+  const pollConfig = makePollConfig(answers, reference)
 
   await ctx.replyWithPoll(pollQuestion, pollAnswers, pollConfig);
 }

@@ -1,6 +1,7 @@
 import { Context } from "grammy";
-import { extractText, makeExplanation, } from "./lib/utils.js";
+import { extractText } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
+import { getAnswers, makePollConfig, messageConfig } from "./post-commons.js";
 
 export async function postMessagePoll(ctx: Context, quiz: TQuiz) {
   const { id, block, level, topic, question, answers, reference } = quiz;
@@ -14,27 +15,14 @@ export async function postMessagePoll(ctx: Context, quiz: TQuiz) {
     `[id: ${id}]`,
   ].join("\n");
 
-  const messageConfig = {
-    parse_mode: "HTML",
-    disable_notification: true
-  } as const
-
   const questionMessage = await ctx.reply(questionText, messageConfig);
 
 
-  const pollAnswers = answers.map(({ answer }) => answer ?? "");
-  const correct_option_id = answers.findIndex(({ isCorrect }) => isCorrect);
-  const explanation = makeExplanation(answers, correct_option_id, reference);
+  const pollAnswers = getAnswers(answers);
   const pollConfig = {
-    type: "quiz",
-    correct_option_id,
-    explanation,
-    explanation_parse_mode: "HTML",
+    ...makePollConfig(answers, reference),
     reply_to_message_id: questionMessage.message_id,
-    disable_notification: true,
   } as const;
 
   await ctx.replyWithPoll("Выберете единственный ответ:", pollAnswers, pollConfig);
-
-
 }
