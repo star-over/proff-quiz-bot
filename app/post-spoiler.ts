@@ -1,4 +1,4 @@
-import { proxies } from "./lib/utils.js";
+import { proxies } from "./post-commons.js";
 
 export async function postSpoiler(ctx, quiz) {
 

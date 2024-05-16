@@ -1,8 +1,9 @@
 import { InputFile } from "grammy";
 import { renderToStaticMarkup } from "react-dom/server";
-import { extractText, proxies } from "./lib/utils.js";
+import { extractText } from "./lib/utils.js";
 import { render } from "./puppeteer/render.js";
 import { Card1 } from "./templates/card1.js";
+import { proxies } from "./post-commons.js";
 
 export async function postPicturePoll(ctx, quiz) {
 
