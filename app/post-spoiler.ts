@@ -1,37 +1,42 @@
-import { proxies } from "./post-commons.js";
+import { Context } from "grammy";
+import { extractText } from "./lib/utils.js";
+import { getAnswersWithProxies, getLevelText, getMaxAnswerSize, isStyleOne, messageConfig } from "./post-commons.js";
+import { TAnswers, TQuiz } from "./quizzes/quiz.js";
 
-export async function postSpoiler(ctx, quiz) {
+export async function postSpoiler(ctx: Context, quiz: TQuiz) {
+  const { id, block, level, topic, question, answers, reference } = quiz;
+  const levelText = getLevelText(level);
+  const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
+  const maxAnswerSize: number = getMaxAnswerSize(quiz);
+  const explanation = (reference?.length > 0) ? `\n<b>Источник:</b>\n${reference}` : "";
+  const chooseText = isStyleOne(quiz)
+    ? "Выберете <b>один</b> верный ответ:"
+    : "Выберете <b>несколько</b> верных ответов:";
 
-  const { question, answers, reference, topic } = quiz;
-  const pollAnswers = answers
-    .map((answer, i) => (
-      {
-        ...answer,
-        text: `${proxies[i]}. ${answer.answer}`
-      }
-    ));
-  const correctAnswer = pollAnswers
-    .find(({ isCorrect }) => isCorrect)
-    .text;
-
-  const message = [
-    `Тема: <b>${topic}</b>`,
+  const questionText = [
+    `<b>Блок:</b> ${block}`,
+    `<b>Тема:</b> ${topic}`,
+    `${levelText}`,
+    "\n<b>Вопрос:</b>",
+    `${extractText(question)}`,
     "",
-    question,
+    `${chooseText}`,
     "",
-    pollAnswers.map(({ text }) => text).join("\n"),
-    "",
-    "Ответ:",
-    `<tg-spoiler>\
-    ${correctAnswer.padStart(20, " ")}\
-    <blockquote>${reference}</blockquote>\
-    </tg-spoiler>`,
+    answersWithProxy
+      .map(({ answer, proxy }) => `<b>${proxy}.</b> ${answer}`)
+      .join("\n"),
+    "<tg-spoiler>",
+    "<blockquote>",
+    "<b>Ответ:</b>",
+    answersWithProxy
+      .filter(({ isCorrect }) => isCorrect)
+      .map(({ proxy, answer }) => `<b>${proxy}.</b> ${(answer + " ").padEnd(maxAnswerSize, "⠀")}`)
+      .join("\n"),
+    `${explanation}`,
+    "</blockquote>",
+    "</tg-spoiler>",
+    `[id: ${id}]`,
   ].join("\n");
 
-  const config = {
-    parse_mode: 'HTML',
-    disable_web_page_preview: true,
-  } as const;
-
-  await ctx.reply(message, config);
+  await ctx.reply(questionText, messageConfig);
 }

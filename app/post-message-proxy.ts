@@ -1,14 +1,14 @@
 import { Context } from "grammy";
 import { extractText } from "./lib/utils.js";
 import { TAnswers, TQuiz } from "./quizzes/quiz.js";
-import { getAnswersWithProxies, makePollConfig, messageConfig } from "./post-commons.js";
+import { getAnswersWithProxies, getLevelText, makePollConfig, messageConfig } from "./post-commons.js";
 
 export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
   const { id, block, level, topic, question, answers, reference } = quiz;
 
-  const levelText = (level?.length > 0) ? `<b>Уровень:</b> ${level}` : "";
+  const levelText: string = getLevelText(level);
   const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
-  const pollAnswers = answersWithProxy.map(({ proxy }) => `${proxy}.`);
+  const pollAnswers: string[] = answersWithProxy.map(({ proxy }) => `${proxy}.`);
 
   const questionText = [
     `<b>Блок:</b> ${block}`,

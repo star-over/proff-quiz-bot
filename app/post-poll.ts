@@ -1,8 +1,9 @@
+import { Context } from "grammy";
 import { extractText } from "./lib/utils.js";
 import { getAnswers, makePollConfig } from "./post-commons.js";
 import { TQuiz } from "./quizzes/quiz.js";
 
-export async function postPoll(ctx, quiz: TQuiz) {
+export async function postPoll(ctx: Context, quiz: TQuiz) {
   const { id, topic, question, answers, reference } = quiz;
 
   const pollQuestion = [
