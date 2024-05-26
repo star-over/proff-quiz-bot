@@ -1,13 +1,15 @@
+import { customKeyboard } from "./keyboard.js";
 import { truncate } from "./lib/utils.js";
 import { TAnswers, TQuiz } from "./quizzes/quiz.js";
-
 
 export const proxies = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
   "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "X", "Z"];
 
+
 export const messageConfig = {
   parse_mode: "HTML",
-  disable_notification: true
+  disable_notification: true,
+  // reply_markup: customKeyboard,
 } as const;
 
 function getCorrectAnswerIndex(answers: TAnswers): number {

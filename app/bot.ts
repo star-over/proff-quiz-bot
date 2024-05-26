@@ -13,9 +13,98 @@ import { isAnswerSizeGt100, isPollQuestionGt250, isStyleOne } from "./post-commo
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
 
-bot.command("start", (ctx) => ctx.reply("Профессиональное тестирование"));
+
+bot.api.setMyCommands([
+  {
+    command: "construction_management",
+    description: "Управление строительством",
+  },
+  {
+    command: "commom",
+    description: "Общие знания",
+  },
+  {
+    command: "capital_planning",
+    description: "Планирование капитальных вложений",
+  },
+  {
+    command: "construction_control",
+    description: "Строительный контроль",
+  },
+  {
+    command: "engineering",
+    description: "Управление проектированием в капитальном строительстве",
+  },
+  {
+    command: "pricing",
+    description: "Ценообразование капитального строительства",
+  },
+  {
+    command: "projects",
+    description: "Управление проектами",
+  },
+])
+
+
+bot.command("start", (ctx) => ctx.reply("Отправьте сообщение боту чтобы получить случайный вопрос по выбранной теме"));
+
+bot.command("commom", async (ctx) => {
+  const quizzes = allQuizzes.filter(({ block }) => block === "Общие знания");
+  const quiz: TQuiz = getRandom(quizzes);
+  await postSpoiler(ctx, quiz);
+});
+
+bot.command("capital_planning", async (ctx) => {
+  const quizzes = allQuizzes.filter(({ block }) => block === "Планирование капитальных вложений");
+  const quiz: TQuiz = getRandom(quizzes);
+  await postSpoiler(ctx, quiz);
+});
+
+bot.command("construction_control", async (ctx) => {
+  const quizzes = allQuizzes.filter(({ block }) => block === "Строительный контроль");
+  const quiz: TQuiz = getRandom(quizzes);
+  await postSpoiler(ctx, quiz);
+});
+
+bot.command("engineering", async (ctx) => {
+  const quizzes = allQuizzes.filter(({ block }) => block === "Управление проектированием в капитальном строительстве");
+  const quiz: TQuiz = getRandom(quizzes);
+  await postSpoiler(ctx, quiz);
+});
+
+bot.command("projects", async (ctx) => {
+  const quizzes = allQuizzes.filter(({ block }) => block === "Управление проектами");
+  const quiz: TQuiz = getRandom(quizzes);
+  await postSpoiler(ctx, quiz);
+});
+
+bot.command("construction_management", async (ctx) => {
+  const quizzes = allQuizzes.filter(({ block }) => block === "Управление строительством");
+  const quiz: TQuiz = getRandom(quizzes);
+  await postSpoiler(ctx, quiz);
+});
+
+bot.command("pricing", async (ctx) => {
+  const quizzes = allQuizzes.filter(({ block }) => block === "Ценообразование капитального строительства");
+  const quiz: TQuiz = getRandom(quizzes);
+  await postSpoiler(ctx, quiz);
+});
+
+bot.command("get", async (ctx) => {
+  console.log("🚀 > match:", typeof ctx.match);
+  const questionId = Number(ctx.match);
+
+  const quizzes = allQuizzes.filter(({ id }) => id === questionId)
+  if (quizzes.length > 0) {
+    await postSpoiler(ctx, quizzes.at(0));
+  } else {
+    await ctx.reply(`Нет вопроса с номером ${ctx.match}`)
+  }
+
+});
+
 bot.on("message", async (ctx) => {
-  console.log("🚀 > bot.on > ctx:", ctx.chat.id);
+  console.log("🚀 > bot.on > ctx:", ctx);
 
   const quizzes = allQuizzes
   // .filter(isStyleOne)
@@ -44,7 +133,7 @@ bot.on("message", async (ctx) => {
   // } else {
   //   await postPoll(ctx, quiz);
   // }
-  
+
   await postSpoiler(ctx, quiz);
 });
 
