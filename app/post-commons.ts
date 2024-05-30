@@ -1,5 +1,10 @@
+import { Context } from "grammy";
 import { customKeyboard } from "./keyboard.js";
 import { truncate } from "./lib/utils.js";
+import { postMessagePoll } from "./post-message-poll.js";
+import { postMessageProxy } from "./post-message-proxy.js";
+import { postPoll } from "./post-poll.js";
+import { postSpoiler } from "./post-spoiler.js";
 import { TAnswers, TQuiz } from "./quizzes/quiz.js";
 
 export const proxies = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
@@ -64,11 +69,23 @@ export function getMaxAnswerSize(quiz: TQuiz): number {
     .at(-1);
 }
 
-export function isPollQuestionGt250(quiz: TQuiz): boolean {
+export function isQuestionGt250(quiz: TQuiz): boolean {
   return (quiz.topic.length + quiz.question.length) > 250;
 }
 
-
+export async function postQuiz(ctx: Context, quiz: TQuiz): Promise<void> {
+  if (isStyleOne(quiz) === false) {
+    await postSpoiler(ctx, quiz);
+  } else if (quiz.answers.length > 10) {
+    await postSpoiler(ctx, quiz);
+  } else if (isAnswerSizeGt100(quiz)) {
+    await postMessageProxy(ctx, quiz);
+  } else if (isQuestionGt250(quiz)) {
+    await postMessagePoll(ctx, quiz);
+  } else {
+    await postPoll(ctx, quiz);
+  }
+}
 
 export function makeExplanation(answers: TAnswers, reference: string): string {
   // todo: maximaze info in explanation. Optimasing truncate algorithm.
