@@ -104,12 +104,12 @@ bot.command("get", async (ctx) => {
 
 bot.on("callback_query:data", async (ctx) => {
   const userName = ctx.update.callback_query.from.first_name;
+  const data = ctx.update.callback_query.data;
+  const show_alert = (data !== "A");
+  const text = show_alert ? `${userName}, надо еще подумать...` : "Отлично!"
   // console.log("===>", ctx.update.callback_query.from.first_name);
   // console.log("Unknown button event with payload", ctx);
-  await ctx.answerCallbackQuery({
-    text: `${userName}, великолепно!`,
-    show_alert: true,
-  }); // remove loading animation
+  await ctx.answerCallbackQuery({ text, show_alert }); // remove loading animation
 });
 
 bot.on("message", async (ctx) => {
