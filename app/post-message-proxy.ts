@@ -1,4 +1,4 @@
-import { Context } from "grammy";
+import { Context, InlineKeyboard } from "grammy";
 import { extractText } from "./lib/utils.js";
 import { TAnswers, TQuiz } from "./quizzes/quiz.js";
 import { getAnswersWithProxies, getLevelText, makePollConfig, messageConfig } from "./post-commons.js";
@@ -9,6 +9,10 @@ export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
   const levelText: string = getLevelText(level);
   const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
   const pollAnswers: string[] = answersWithProxy.map(({ proxy }) => `${proxy}.`);
+
+  const buttonRow = pollAnswers
+    .map(([label]) => InlineKeyboard.text(label));
+  const inlineKeyboard = InlineKeyboard.from([buttonRow]);
 
   const questionText = [
     `<b>Блок:</b> ${block}`,
@@ -23,7 +27,7 @@ export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
     `[id: ${id}]`,
   ].join("\n");
 
-  const questionMessage = await ctx.reply(questionText, messageConfig);
+  const questionMessage = await ctx.reply(questionText, {...messageConfig, reply_markup: inlineKeyboard});
 
   const pollConfig = {
     ...makePollConfig(answersWithProxy, reference),

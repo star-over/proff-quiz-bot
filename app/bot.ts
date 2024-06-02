@@ -1,4 +1,4 @@
-import { Bot } from "grammy";
+import { Bot, InlineKeyboard } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
@@ -93,11 +93,27 @@ bot.command("get", async (ctx) => {
   } else {
     await ctx.reply(`Нет вопроса с номером ${ctx.match}`)
   }
+});
 
+// bot.callbackQuery("next", async (ctx) => {
+//   await ctx.answerCallbackQuery({
+//     text: "You were curious, indeed!",
+//     show_alert: true,
+//   });
+// });
+
+bot.on("callback_query:data", async (ctx) => {
+  const userName = ctx.update.callback_query.from.first_name;
+  // console.log("===>", ctx.update.callback_query.from.first_name);
+  // console.log("Unknown button event with payload", ctx);
+  await ctx.answerCallbackQuery({
+    text: `${userName}, великолепно!`,
+    show_alert: true,
+  }); // remove loading animation
 });
 
 bot.on("message", async (ctx) => {
-  console.log("🚀 > bot.on > ctx:", ctx);
+  // console.log("🚀 > bot.on > ctx:", ctx);
 
   const quizzes = allQuizzes
     // .filter(isStyleOne)
@@ -111,6 +127,11 @@ bot.on("message", async (ctx) => {
   const quiz: TQuiz = getRandom(quizzes);
 
   await postQuiz(ctx, quiz);
+  // const s = (new URLSearchParams({ a: "1", b: "2" })).toString() // 'a=1&b=2'
+  // const o = Object.fromEntries((new URLSearchParams(s)).entries()) // {a: '1', b: '2'}
+
+
+
 });
 
 bot.start();
