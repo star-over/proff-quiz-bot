@@ -3,6 +3,9 @@ prod: system-update git-pull docker
 dev:
 	npx tsx --watch --trace-warnings --env-file=.env.dev ./app/bot.ts
 
+system-restart:
+	sudo shutdown -r now
+
 system-update:
 	sudo apt update
 	sudo apt upgrade -y

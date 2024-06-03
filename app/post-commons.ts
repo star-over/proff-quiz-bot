@@ -5,7 +5,7 @@ import { postMessagePoll } from "./post-message-poll.js";
 import { postMessageProxy } from "./post-message-proxy.js";
 import { postPoll } from "./post-poll.js";
 import { postSpoiler } from "./post-spoiler.js";
-import { TAnswers, TQuiz } from "./quizzes/quiz.js";
+import { TAnswers, TQuiz, TQuizBundle } from "./quizzes/quiz.js";
 
 export const proxies = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
   "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "X", "Z"];
@@ -81,12 +81,23 @@ export async function postQuiz(ctx: Context, quiz: TQuiz): Promise<void> {
   } else if (isAnswerSizeGt100(quiz)) {
     await postMessageProxy(ctx, quiz);
   } else if (isQuestionGt250(quiz)) {
-    await postMessagePoll(ctx, quiz);
+    // await postMessagePoll(ctx, quiz);
+    await postMessageProxy(ctx, quiz);
   } else {
-    await postPoll(ctx, quiz);
+    // await postPoll(ctx, quiz);
+    await postMessageProxy(ctx, quiz);
   }
-}
+};
 
+export function getQuizById(quizzes: TQuizBundle, questionId: number) {
+  return quizzes.find(({ id }) => id === questionId);
+};
+
+export function getAnswerById(quiz: TQuiz, answerId: number) {
+  return quiz.answers.find(({ id }) => id === answerId);
+};
+
+//todo make it get quiz: TQuiz only
 export function makeExplanation(answers: TAnswers, reference: string): string {
   // todo: maximaze info in explanation. Optimasing truncate algorithm.
   // const explanationSizeLimit = 200;
@@ -100,5 +111,5 @@ export function makeExplanation(answers: TAnswers, reference: string): string {
     `${reference}`,
     // `<b>Источник:</b> ${reference}`,
   ].join("\n");
-  return truncate(explanation, 200, true);
+  return truncate(explanation, 180, true);
 };

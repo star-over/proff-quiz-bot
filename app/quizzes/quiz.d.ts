@@ -22,6 +22,7 @@ export type TQuiz = {
 
 export type TAnswers = TAnswer[];
 export type TAnswer = {
+  id: number;
   answer: string;
   isCorrect: boolean;
   proxy?: string;

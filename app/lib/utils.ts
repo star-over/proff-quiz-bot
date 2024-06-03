@@ -22,3 +22,11 @@ export function truncate(str: string, n: number, useWordBoundary: boolean) {
     ? subString.slice(0, subString.lastIndexOf(" "))
     : subString) + "...";
 };
+
+export function objStringify(obj: {}): string {
+  return (new URLSearchParams(obj)).toString() // 'a=1&b=2'
+};
+
+export function objParse(str: string) {
+  return Object.fromEntries((new URLSearchParams(str)).entries()) // {a: '1', b: '2'}
+};

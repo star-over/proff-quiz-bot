@@ -1,8 +1,8 @@
 import { Bot, InlineKeyboard } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
-import { getRandom } from "./lib/utils.js";
+import { extractText, getRandom, objParse } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { postQuiz } from "./post-commons.js";
+import { getAnswerById, getQuizById, isStyleOne, makeExplanation, postQuiz } from "./post-commons.js";
 
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
@@ -105,8 +105,15 @@ bot.command("get", async (ctx) => {
 bot.on("callback_query:data", async (ctx) => {
   const userName = ctx.update.callback_query.from.first_name;
   const data = ctx.update.callback_query.data;
-  const show_alert = (data !== "A");
-  const text = show_alert ? `${userName}, надо еще подумать...` : "Отлично!"
+  const query = objParse(data);
+  const quiz = getQuizById(allQuizzes, Number(query.questionId));
+  const answer = getAnswerById(quiz, Number(query.answerId));
+  const show_alert = (answer.isCorrect === false);
+  // todo make it with variables
+  const text = show_alert
+    ? `🤦🏼‍♂️ ${userName}, ответ был: ${query.correctProxy}\n${extractText(makeExplanation(quiz.answers, quiz.reference))}`
+    : "🚀🔥👍 - Отлично!"
+  // const text = data;
   // console.log("===>", ctx.update.callback_query.from.first_name);
   // console.log("Unknown button event with payload", ctx);
   await ctx.answerCallbackQuery({ text, show_alert }); // remove loading animation
@@ -116,9 +123,9 @@ bot.on("message", async (ctx) => {
   // console.log("🚀 > bot.on > ctx:", ctx);
 
   const quizzes = allQuizzes
-    // .filter(isStyleOne)
+    .filter(isStyleOne)
     .filter(({ answers }) => (answers.length >= 2))
-  // .filter(({ answers }) => (2 <= answers.length) && (answers.length <= 10))
+  .filter(({ answers }) => (2 <= answers.length) && (answers.length <= 10))
   // .filter(({ answers }) => (answers.length < 10))
   // .filter(({ answers }) => answers.some(({ answer }) => answer.length > 100))
   // .filter(isAnswerSizeGt100)
