@@ -1,21 +1,15 @@
-import { Context, InlineKeyboard } from "grammy";
-import { extractText, objParse, objStringify } from "./lib/utils.js";
+import { Context } from "grammy";
+import { extractText } from "./lib/utils.js";
 import { TAnswers, TQuiz } from "./quizzes/quiz.js";
 import { getAnswersWithProxies, getLevelText, makePollConfig, messageConfig } from "./post-commons.js";
 
 export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
-  const { id: questionId, block, level, topic, question, answers, reference } = quiz;
+  const { id, block, level, topic, question, answers, reference } = quiz;
 
   const levelText: string = getLevelText(level);
   const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
-  const correctProxy = answersWithProxy.find(({isCorrect}) => isCorrect).proxy;
   const pollAnswers: string[] = answersWithProxy.map(({ proxy }) => `${proxy}.`);
-  const buttonAnswers = answersWithProxy
-    .map(({ proxy, id: answerId }) => [`${proxy}.`, objStringify({ questionId, answerId, correctProxy })])
 
-  const buttonRow = buttonAnswers
-    .map(([label, data]) => InlineKeyboard.text(label, data));
-  const inlineKeyboard = InlineKeyboard.from([buttonRow]);
 
   const questionText = [
     `<b>Блок:</b> ${block}`,
@@ -27,13 +21,10 @@ export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
       .map(({ answer, proxy }) => `<b>${proxy}.</b> ${answer}`)
       .join("\n"),
     "",
-    `[id: ${questionId}]`,
+    `[id: ${id}]`,
   ].join("\n");
 
-  const questionMessage = await ctx.reply(
-    questionText,
-    { ...messageConfig, reply_markup: inlineKeyboard }
-  );
+  const questionMessage = await ctx.reply(questionText, messageConfig);
 
   const pollConfig = {
     ...makePollConfig(answersWithProxy, reference),

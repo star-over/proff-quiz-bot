@@ -6,15 +6,31 @@ import { postMessageProxy } from "./post-message-proxy.js";
 import { postPoll } from "./post-poll.js";
 import { postSpoiler } from "./post-spoiler.js";
 import { TAnswers, TQuiz, TQuizBundle } from "./quizzes/quiz.js";
+import { postMessageInline } from "./post-message-inline.js";
 
-export const proxies = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K",
-  "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "X", "Z"];
+export const proxies = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
+export const positivePhrases = [
+  "👍🏻 Отличная работа!",
+  "👏🏻 Cуперпрофессионал!",
+  "🤖💫 Что творишь, просто космос!",
+  "Супер котэ 😻",
+  "Верно! 😺 Мур...",
+  "Браво! 🚀",
+  "Так держать! 🔥",
+  "🔥 Ответ верный! 🔥"
+];
 
+export const negativePhrases = [
+  "Подумай получше 🤭",
+  "🤦🏼‍♂️ Мимо",
+  "Не угадал 🙈",
+  "Ну..нет 😔",
+  "Плоховато, друг 🙄",
+]
 
 export const messageConfig = {
   parse_mode: "HTML",
   disable_notification: true,
-  // reply_markup: customKeyboard,
 } as const;
 
 function getCorrectAnswerIndex(answers: TAnswers): number {
@@ -79,13 +95,13 @@ export async function postQuiz(ctx: Context, quiz: TQuiz): Promise<void> {
   } else if (quiz.answers.length > 10) {
     await postSpoiler(ctx, quiz);
   } else if (isAnswerSizeGt100(quiz)) {
-    await postMessageProxy(ctx, quiz);
+    await postMessageInline(ctx, quiz);
   } else if (isQuestionGt250(quiz)) {
     // await postMessagePoll(ctx, quiz);
-    await postMessageProxy(ctx, quiz);
+    await postMessageInline(ctx, quiz);
   } else {
     // await postPoll(ctx, quiz);
-    await postMessageProxy(ctx, quiz);
+    await postMessageInline(ctx, quiz);
   }
 };
 
@@ -111,5 +127,5 @@ export function makeExplanation(answers: TAnswers, reference: string): string {
     `${reference}`,
     // `<b>Источник:</b> ${reference}`,
   ].join("\n");
-  return truncate(explanation, 180, true);
+  return truncate(explanation, 170, true);
 };
