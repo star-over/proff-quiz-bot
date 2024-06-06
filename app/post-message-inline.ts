@@ -1,15 +1,13 @@
 import { Context, InlineKeyboard } from "grammy";
 import { extractText, objStringify } from "./lib/utils.js";
 import { TAnswers, TQuiz } from "./quizzes/quiz.js";
-import { getAnswersWithProxies, getLevelText, makePollConfig, messageConfig } from "./post-commons.js";
+import { getAnswersWithProxies, getLevelText, messageConfig } from "./post-commons.js";
 
 export async function postMessageInline(ctx: Context, quiz: TQuiz) {
-  const { id: questionId, block, level, topic, question, answers, reference } = quiz;
+  const { id: questionId, block, level, topic, question, answers } = quiz;
 
-  const levelText: string = getLevelText(level);
   const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
   const correctProxy = answersWithProxy.find(({ isCorrect }) => isCorrect).proxy;
-  const pollAnswers: string[] = answersWithProxy.map(({ proxy }) => `${proxy}.`);
   const buttonAnswers = answersWithProxy
     .map(({ proxy, id: answerId }) => [proxy, objStringify({ questionId, answerId, correctProxy })])
 
@@ -20,7 +18,7 @@ export async function postMessageInline(ctx: Context, quiz: TQuiz) {
   const questionText = [
     `<b>Блок:</b> ${block}`,
     `<b>Тема:</b> ${topic}`,
-    `${levelText}`,
+    `<b>Уровень:</b> ${"⭐️".repeat(level || 1)}`,
     `\n<b>${extractText(question)}</b>`,
     "",
     answersWithProxy

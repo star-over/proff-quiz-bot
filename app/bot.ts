@@ -1,8 +1,8 @@
-import { Bot, InlineKeyboard } from "grammy";
+import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
-import { extractText, getRandom, objParse } from "./lib/utils.js";
+import { getRandom, objParse } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { getAnswerById, getQuizById, isStyleOne, makeExplanation, negativePhrases, positivePhrases, postQuiz } from "./post-commons.js";
+import { getAnswerById, getQuizById, isStyleOne, makeExplanation2, negativePhrases, positivePhrases, postQuiz } from "./post-commons.js";
 
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
@@ -111,9 +111,10 @@ bot.on("callback_query:data", async (ctx) => {
   const show_alert = (answer.isCorrect === false);
   const positive = getRandom(positivePhrases);
   const negative = getRandom(negativePhrases);
+  const phrase = `${negative}, ответ был:`
   // todo make it with variables
   const text = show_alert
-    ? `${negative} ответ был: \n${query.correctProxy} ${extractText(makeExplanation(quiz.answers, quiz.reference))}`
+    ? `${makeExplanation2(phrase, query.correctProxy, quiz.answers, quiz.reference)}`
     : positive
   // const text = data;
   // console.log("===>", ctx.update.callback_query.from.first_name);

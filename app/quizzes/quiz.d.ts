@@ -13,7 +13,7 @@ export type TQuiz = {
   isActive: boolean;
   block?: string | null;
   topic: string;
-  level?: string | null;
+  level?: number;
   reference?: string | null;
   style?: string | null;
   question: string;

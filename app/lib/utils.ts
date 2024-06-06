@@ -30,3 +30,7 @@ export function objStringify(obj: {}): string {
 export function objParse(str: string) {
   return Object.fromEntries((new URLSearchParams(str)).entries()) // {a: '1', b: '2'}
 };
+
+export function shuffle(array: string[]) {
+  return array.toSorted(() => Math.random() - 0.5);
+}
