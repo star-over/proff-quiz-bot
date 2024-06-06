@@ -6,7 +6,7 @@ import { getAnswers, makePollConfig, messageConfig } from "./post-commons.js";
 export async function postMessagePoll(ctx: Context, quiz: TQuiz) {
   const { id, block, level, topic, question, answers, reference } = quiz;
 
-  const levelText = (level?.length > 0) ? `<b>Уровень:</b> ${level}` : "";
+  const levelText = (level > 0) ? `<b>Уровень:</b> ${level}` : "";
   const questionText = [
     `<b>Блок:</b> ${block}`,
     `<b>Тема:</b> ${topic}`,
