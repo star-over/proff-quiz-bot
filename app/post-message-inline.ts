@@ -28,13 +28,15 @@ export async function postMessageInline(ctx: Context, quiz: TQuiz) {
     `[id: ${questionId}]`,
   ].join("\n");
 
-  await ctx.reply(
+  const { chat: { id: chat_id }, message_id } = await ctx.reply(
     questionText,
     {
       ...messageConfig,
       reply_markup: inlineKeyboard
     }
   );
+  // console.log("🚀 > postMessageInline > message:", chat_id, message_id);
+  // await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null })
 
 
 }

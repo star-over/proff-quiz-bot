@@ -2,7 +2,7 @@ import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom, objParse } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { getAnswerById, getQuizById, isStyleOne, makeExplanation2, negativePhrases, positivePhrases, postQuiz } from "./post-commons.js";
+import { getAnswerById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, negativePhrases, positivePhrases, postQuiz } from "./post-commons.js";
 
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
@@ -95,31 +95,21 @@ bot.command("get", async (ctx) => {
   }
 });
 
-// bot.callbackQuery("next", async (ctx) => {
-//   await ctx.answerCallbackQuery({
-//     text: "You were curious, indeed!",
-//     show_alert: true,
-//   });
-// });
-
 bot.on("callback_query:data", async (ctx) => {
-  const userName = ctx.update.callback_query.from.first_name;
-  const data = ctx.update.callback_query.data;
-  const query = objParse(data);
-  const quiz = getQuizById(allQuizzes, Number(query.questionId));
-  const answer = getAnswerById(quiz, Number(query.answerId));
-  const show_alert = (answer.isCorrect === false);
-  const positive = getRandom(positivePhrases);
-  const negative = getRandom(negativePhrases);
-  const phrase = `${negative}, ответ был:`
-  // todo make it with variables
-  const text = show_alert
-    ? `${makeExplanation2(phrase, query.correctProxy, quiz.answers, quiz.reference)}`
-    : positive
-  // const text = data;
-  // console.log("===>", ctx.update.callback_query.from.first_name);
-  // console.log("Unknown button event with payload", ctx);
-  await ctx.answerCallbackQuery({ text, show_alert }); // remove loading animation
+  const message_id = ctx.update.callback_query.message.message_id;
+  const chat_id = ctx.update.callback_query.message.chat.id;
+  const firstName = ctx.update.callback_query.from.first_name;
+  const username = ctx.update.callback_query.from.username;
+
+  // console.log("🚀 > bot.on > ctx:", username);
+  const queryData = ctx.update.callback_query.data;
+  const text = makeExplanation3({ firstName, queryData })
+
+  // await ctx.answerCallbackQuery({ text, show_alert }); // remove loading animation
+  await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null });
+  await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" })
+
+
 });
 
 bot.on("message", async (ctx) => {

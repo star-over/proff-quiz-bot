@@ -1,6 +1,6 @@
 import { Context } from "grammy";
 import { customKeyboard } from "./keyboard.js";
-import { shuffle, truncate } from "./lib/utils.js";
+import { getRandom, objParse, shuffle, truncate } from "./lib/utils.js";
 import { postMessagePoll } from "./post-message-poll.js";
 import { postMessageProxy } from "./post-message-proxy.js";
 import { postPoll } from "./post-poll.js";
@@ -8,6 +8,7 @@ import { postSpoiler } from "./post-spoiler.js";
 import { TAnswers, TQuiz, TQuizBundle } from "./quizzes/quiz.js";
 import { postMessageInline } from "./post-message-inline.js";
 import { assert } from "console";
+import { allQuizzes } from "./quizzes/allQuizzes.js";
 // ⭐️
 export const proxies = ["😀", "👍", "🌈", "⭐️", "🔥", "🌶️", "⚽️", "🏆", "🎸", "🚙", "🚀", "💎", "🧲", "🧡", "🟣", "🔷", "🤡", "👽", "🎃", "🙏", "🦋", "🐌", "🐝", "🌼", "⚡️", "💧", "🍺", "🎯", "⌛️", "💰", "🎈", "🅰️"];
 // export const proxies = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
@@ -447,4 +448,30 @@ export function makeExplanation2(phrase: string, proxy: string, answers: TAnswer
     // `<b>Источник:</b> ${reference}`,
   ].join("\n");
   return truncate(explanation, 200, true);
+};
+export function makeExplanation3({ firstName, queryData }): string {
+  const query = objParse(queryData);
+  const quiz = getQuizById(allQuizzes, Number(query.questionId));
+  const answer = getAnswerById(quiz, Number(query.answerId));
+  const correctAnswerText = getCorrectAnswerText(quiz.answers)
+
+  if (answer.isCorrect) {
+    return [
+      "✅✅✅✅✅✅",
+      "",
+      `<b>${firstName}</b>, ${getRandom(positivePhrases)}`,
+    ].join("\n");
+  };
+
+  return [
+    "❌❌❌❌❌❌",
+    "",
+    `<b>${firstName}</b>, ${getRandom(negativePhrases)}`,
+    "",
+    "<b>Ответ был:</b>",
+    `${query.correctProxy} ${correctAnswerText}`,
+    "",
+    `<b>Источник:</b>`,
+    quiz.reference,
+  ].join("\n");
 };
