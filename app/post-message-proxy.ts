@@ -8,7 +8,7 @@ export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
 
   const levelText: string = getLevelText(level);
   const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
-  const pollAnswers: string[] = answersWithProxy.map(({ proxy }) => `${proxy}.`);
+  const pollAnswers = answersWithProxy.map(({ proxy }) => ({ text: `${proxy}` }));
 
 
   const questionText = [

@@ -13,7 +13,7 @@ export async function postPoll(ctx: Context, quiz: TQuiz) {
     `[id:${id}]`,
   ].join("\n");
 
-  const pollAnswers = getAnswers(answers);
+  const pollAnswers = getAnswers(answers).map((answer) => ({ text: answer }));
   const pollConfig = makePollConfig(answers, reference)
 
   await ctx.replyWithPoll(pollQuestion, pollAnswers, pollConfig);

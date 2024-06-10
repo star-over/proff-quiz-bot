@@ -363,7 +363,7 @@ export function makePollConfig(answers: TAnswers, reference: string) {
   } as const;
 };
 
-export function getAnswers(answers: TAnswers): string[] {
+export function getAnswers(answers: TAnswers) {
   return answers.map(({ answer }) => answer ?? "");
 };
 
@@ -477,3 +477,15 @@ export function makeExplanation3({ user, queryData }): string {
     "</tg-spoiler>",
   ].join("\n");
 };
+
+export function commonFilters(quizzes: TQuiz[]): TQuiz[] {
+  return quizzes
+    .filter(isStyleOne)
+    .filter(({ answers }) => (answers.length >= 2))
+    .filter(({ answers }) => (2 <= answers.length) && (answers.length <= 10))
+  // .filter(({ answers }) => (answers.length < 10))
+  // .filter(({ answers }) => answers.some(({ answer }) => answer.length > 100))
+  // .filter(isAnswerSizeGt100)
+  // .filter(({ reference }) => reference.length <= 200)
+  // .filter(({ topic, question }) => topic.length + question.length < 250)
+}

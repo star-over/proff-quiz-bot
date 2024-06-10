@@ -18,7 +18,7 @@ export async function postMessagePoll(ctx: Context, quiz: TQuiz) {
   const questionMessage = await ctx.reply(questionText, messageConfig);
 
 
-  const pollAnswers = getAnswers(answers);
+  const pollAnswers = getAnswers(answers).map((answer) => ({ text: answer}));
   const pollConfig = {
     ...makePollConfig(answers, reference),
     reply_to_message_id: questionMessage.message_id,

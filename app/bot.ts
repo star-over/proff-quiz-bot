@@ -2,8 +2,9 @@ import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom, objParse } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { getAnswerById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, negativePhrases, positivePhrases, postQuiz } from "./post-commons.js";
+import { commonFilters, getAnswerById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, negativePhrases, positivePhrases, postQuiz } from "./post-commons.js";
 
+const filteredQuizess = commonFilters(allQuizzes);
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
 
@@ -43,43 +44,43 @@ bot.api.setMyCommands([
 bot.command("start", (ctx) => ctx.reply("Отправьте сообщение боту чтобы получить случайный вопрос по выбранной теме"));
 
 bot.command("commom", async (ctx) => {
-  const quizzes = allQuizzes.filter(({ block }) => block === "Общие знания");
+  const quizzes = filteredQuizess.filter(({ block }) => block === "Общие знания");
   const quiz: TQuiz = getRandom(quizzes);
   await postQuiz(ctx, quiz);
 });
 
 bot.command("capital_planning", async (ctx) => {
-  const quizzes = allQuizzes.filter(({ block }) => block === "Планирование капитальных вложений");
+  const quizzes = filteredQuizess.filter(({ block }) => block === "Планирование капитальных вложений");
   const quiz: TQuiz = getRandom(quizzes);
   await postQuiz(ctx, quiz);
 });
 
 bot.command("constr_control", async (ctx) => {
-  const quizzes = allQuizzes.filter(({ block }) => block === "Строительный контроль");
+  const quizzes = filteredQuizess.filter(({ block }) => block === "Строительный контроль");
   const quiz: TQuiz = getRandom(quizzes);
   await postQuiz(ctx, quiz);
 });
 
 bot.command("engineering", async (ctx) => {
-  const quizzes = allQuizzes.filter(({ block }) => block === "Управление проектированием в капитальном строительстве");
+  const quizzes = filteredQuizess.filter(({ block }) => block === "Управление проектированием в капитальном строительстве");
   const quiz: TQuiz = getRandom(quizzes);
   await postQuiz(ctx, quiz);
 });
 
 bot.command("projects", async (ctx) => {
-  const quizzes = allQuizzes.filter(({ block }) => block === "Управление проектами");
+  const quizzes = filteredQuizess.filter(({ block }) => block === "Управление проектами");
   const quiz: TQuiz = getRandom(quizzes);
   await postQuiz(ctx, quiz);
 });
 
 bot.command("constr_management", async (ctx) => {
-  const quizzes = allQuizzes.filter(({ block }) => block === "Управление строительством");
+  const quizzes = filteredQuizess.filter(({ block }) => block === "Управление строительством");
   const quiz: TQuiz = getRandom(quizzes);
   await postQuiz(ctx, quiz);
 });
 
 bot.command("pricing", async (ctx) => {
-  const quizzes = allQuizzes.filter(({ block }) => block === "Ценообразование капитального строительства");
+  const quizzes = filteredQuizess.filter(({ block }) => block === "Ценообразование капитального строительства");
   const quiz: TQuiz = getRandom(quizzes);
   await postQuiz(ctx, quiz);
 });
@@ -106,23 +107,10 @@ bot.on("callback_query:data", async (ctx) => {
   await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" });
   await ctx.answerCallbackQuery(); // remove loading animation
 
-
 });
 
 bot.on("message", async (ctx) => {
-  // console.log("🚀 > bot.on > ctx:", ctx);
-
-  const quizzes = allQuizzes
-    .filter(isStyleOne)
-    .filter(({ answers }) => (answers.length >= 2))
-    .filter(({ answers }) => (2 <= answers.length) && (answers.length <= 10))
-  // .filter(({ answers }) => (answers.length < 10))
-  // .filter(({ answers }) => answers.some(({ answer }) => answer.length > 100))
-  // .filter(isAnswerSizeGt100)
-  // .filter(({ reference }) => reference.length <= 200)
-  // .filter(({ topic, question }) => topic.length + question.length < 250)
-  const quiz: TQuiz = getRandom(quizzes);
-
+  const quiz: TQuiz = getRandom(filteredQuizess);
   await postQuiz(ctx, quiz);
 });
 
