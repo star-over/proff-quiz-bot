@@ -10,8 +10,8 @@ import { postMessageInline } from "./post-message-inline.js";
 import { assert } from "console";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 // ⭐️
-export const proxies = ["😀", "👍", "🌈", "⭐️", "🔥", "🌶️", "⚽️", "🏆", "🎸", "🚙", "🚀", "💎", "🧲", "🧡", "🟣", "🔷", "🤡", "👽", "🎃", "🙏", "🦋", "🐌", "🐝", "🌼", "⚡️", "💧", "🍺", "🎯", "⌛️", "💰", "🎈", "🅰️"];
-// export const proxies = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
+export const emojiProxies = ["😀", "👍", "🌈", "⭐️", "🔥", "🌶️", "⚽️", "🏆", "🎸", "🚙", "🚀", "💎", "🧲", "🧡", "🟣", "🔷", "🤡", "👽", "🎃", "🙏", "🦋", "🐌", "🐝", "🌼", "⚡️", "💧", "🍺", "🎯", "⌛️", "💰", "🎈", "🅰️"];
+export const numberProxies = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
 export const positivePhrases = [
   "👍🏻 Отличная работа!",
   "👏🏻 Cуперпрофессионал!",
@@ -334,8 +334,6 @@ export const messageConfig = {
   disable_notification: true,
 } as const;
 
-
-
 function getCorrectAnswerIndex(answers: TAnswers): number {
   return answers.findIndex(({ isCorrect }) => isCorrect);
 };
@@ -349,12 +347,11 @@ function getCorrectAnswerText(answers: TAnswers): string {
     : answer.answer;
 };
 
-
 export function getAnswersWithProxies(answers: TAnswers): TAnswers {
-  const randomizedProxy = shuffle(proxies);
+  // const randomizedProxy = shuffle(proxies);
+  const randomizedProxy = numberProxies;
   return answers.map((answer, i) => ({ ...answer, proxy: randomizedProxy[i] }));
 };
-
 
 export function makePollConfig(answers: TAnswers, reference: string) {
   return {
@@ -449,7 +446,8 @@ export function makeExplanation2(phrase: string, proxy: string, answers: TAnswer
   ].join("\n");
   return truncate(explanation, 200, true);
 };
-export function makeExplanation3({ firstName, queryData }): string {
+
+export function makeExplanation3({ user, queryData }): string {
   const query = objParse(queryData);
   const quiz = getQuizById(allQuizzes, Number(query.questionId));
   const answer = getAnswerById(quiz, Number(query.answerId));
@@ -458,20 +456,24 @@ export function makeExplanation3({ firstName, queryData }): string {
   if (answer.isCorrect) {
     return [
       "✅✅✅✅✅✅",
-      "",
-      `<b>${firstName}</b>, ${getRandom(positivePhrases)}`,
+      "<tg-spoiler>",
+      `@${user}`,
+      `${getRandom(positivePhrases)}`,
+      "</tg-spoiler>",
     ].join("\n");
   };
 
   return [
     "❌❌❌❌❌❌",
-    "",
-    `<b>${firstName}</b>, ${getRandom(negativePhrases)}`,
+    "<tg-spoiler>",
+    `@${user}`,
+    `${getRandom(negativePhrases)}`,
     "",
     "<b>Ответ был:</b>",
     `${query.correctProxy} ${correctAnswerText}`,
     "",
     `<b>Источник:</b>`,
     quiz.reference,
+    "</tg-spoiler>",
   ].join("\n");
 };

@@ -86,7 +86,6 @@ bot.command("pricing", async (ctx) => {
 
 bot.command("get", async (ctx) => {
   const questionId = Number(ctx.match);
-
   const quizzes = allQuizzes.filter(({ id }) => id === questionId)
   if (quizzes.length > 0) {
     await postQuiz(ctx, quizzes.at(0));
@@ -100,14 +99,12 @@ bot.on("callback_query:data", async (ctx) => {
   const chat_id = ctx.update.callback_query.message.chat.id;
   const firstName = ctx.update.callback_query.from.first_name;
   const username = ctx.update.callback_query.from.username;
-
-  // console.log("🚀 > bot.on > ctx:", username);
   const queryData = ctx.update.callback_query.data;
-  const text = makeExplanation3({ firstName, queryData })
+  const text = makeExplanation3({ user: username, queryData });
 
-  // await ctx.answerCallbackQuery({ text, show_alert }); // remove loading animation
-  await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null });
-  await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" })
+  // await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null }); //hide inline keyboard
+  await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" });
+  await ctx.answerCallbackQuery(); // remove loading animation
 
 
 });
@@ -127,11 +124,6 @@ bot.on("message", async (ctx) => {
   const quiz: TQuiz = getRandom(quizzes);
 
   await postQuiz(ctx, quiz);
-  // const s = (new URLSearchParams({ a: "1", b: "2" })).toString() // 'a=1&b=2'
-  // const o = Object.fromEntries((new URLSearchParams(s)).entries()) // {a: '1', b: '2'}
-
-
-
 });
 
 bot.start();

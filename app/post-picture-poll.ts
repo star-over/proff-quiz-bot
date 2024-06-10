@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { extractText } from "./lib/utils.js";
 import { render } from "./puppeteer/render.js";
 import { Card1 } from "./templates/card1.js";
-import { proxies } from "./post-commons.js";
+import { numberProxies } from "./post-commons.js";
 
 export async function postPicturePoll(ctx, quiz) {
 
@@ -13,7 +13,7 @@ export async function postPicturePoll(ctx, quiz) {
   const pollQuestion = extractText(question);
 
   const answersWithProxies = answers
-    .map((answer, i) => ({ ...answer, proxy: proxies[i] }));
+    .map((answer, i) => ({ ...answer, proxy: numberProxies[i] }));
 
   const pollAnswersProxy = answersWithProxies
     .map(({ proxy }) => proxy ?? "");
