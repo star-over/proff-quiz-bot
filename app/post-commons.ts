@@ -447,17 +447,18 @@ export function makeExplanation2(phrase: string, proxy: string, answers: TAnswer
   return truncate(explanation, 200, true);
 };
 
-export function makeExplanation3({ user, queryData }): string {
+export function makeExplanation3({ userId, firstName, queryData }): string {
   const query = objParse(queryData);
   const quiz = getQuizById(allQuizzes, Number(query.questionId));
   const answer = getAnswerById(quiz, Number(query.answerId));
-  const correctAnswerText = getCorrectAnswerText(quiz.answers)
+  const correctAnswerText = getCorrectAnswerText(quiz.answers);
+  const userTag = `<a href="tg://user?id=${userId}">${firstName}</a>`;
 
   if (answer.isCorrect) {
     return [
       "✅✅✅✅✅✅",
       "<tg-spoiler>",
-      `@${user}`,
+      userTag,
       `${getRandom(positivePhrases)}`,
       "</tg-spoiler>",
     ].join("\n");
@@ -466,7 +467,7 @@ export function makeExplanation3({ user, queryData }): string {
   return [
     "❌❌❌❌❌❌",
     "<tg-spoiler>",
-    `@${user}`,
+    userTag,
     `${getRandom(negativePhrases)}`,
     "",
     "<b>Ответ был:</b>",

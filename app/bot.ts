@@ -99,12 +99,13 @@ bot.command("get", async (ctx) => {
 bot.on("callback_query:data", async (ctx) => {
   const message_id = ctx.update.callback_query.message.message_id;
   const chat_id = ctx.update.callback_query.message.chat.id;
-  const first_name = ctx.update.callback_query.from.first_name;
   const username = ctx.update.callback_query.from.username;
+  const firstName = ctx.update.callback_query.from.first_name;
+  const userId = ctx.update.callback_query.from.id;
   const queryData = ctx.update.callback_query.data;
-  const text = makeExplanation3({ user: first_name, queryData });
 
   // await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null }); //hide inline keyboard
+  const text = makeExplanation3({ userId, firstName, queryData });
   await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" });
   await ctx.answerCallbackQuery(); // remove loading animation
 
