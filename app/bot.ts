@@ -95,13 +95,14 @@ bot.command("get", async (ctx) => {
   }
 });
 
+
 bot.on("callback_query:data", async (ctx) => {
   const message_id = ctx.update.callback_query.message.message_id;
   const chat_id = ctx.update.callback_query.message.chat.id;
-  const firstName = ctx.update.callback_query.from.first_name;
+  const first_name = ctx.update.callback_query.from.first_name;
   const username = ctx.update.callback_query.from.username;
   const queryData = ctx.update.callback_query.data;
-  const text = makeExplanation3({ user: username, queryData });
+  const text = makeExplanation3({ user: first_name, queryData });
 
   // await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null }); //hide inline keyboard
   await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" });
