@@ -8,7 +8,7 @@ export async function postPoll(ctx: Context, quiz: TQuiz) {
 
   const pollQuestion = [
     `Тема: ${topic}`,
-    ``,
+    "",
     `Вопрос: ${extractText(question)}`,
     `[id:${id}]`,
   ].join("\n");

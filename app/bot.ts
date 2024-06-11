@@ -2,7 +2,7 @@ import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom, objParse } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { commonFilters, getVariantById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, postQuiz } from "./post-commons.js";
+import { commonFilters, getVariantById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, postQuiz, makeIndicator } from "./post-commons.js";
 
 const filteredQuizess = commonFilters(allQuizzes);
 const botToken = process.env.BOT_TOKEN as string
@@ -95,7 +95,6 @@ bot.command("get", async (ctx) => {
   }
 });
 
-
 bot.on("callback_query:data", async (ctx) => {
   const chat_id = ctx.update.callback_query.message.chat.id;
   const username = ctx.update.callback_query.from.username;
@@ -107,7 +106,7 @@ bot.on("callback_query:data", async (ctx) => {
   // await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null }); //hide inline keyboard
   const text = makeExplanation3({ userId, firstName, queryData });
   await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" });
-  await ctx.answerCallbackQuery(); // remove loading animation
+  await ctx.answerCallbackQuery({ text: makeIndicator(queryData) }); // remove loading animation
 
 });
 

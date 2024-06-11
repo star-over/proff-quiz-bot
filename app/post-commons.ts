@@ -130,6 +130,20 @@ export function makeExplanation2(phrase: string, proxy: string, answers: TVarian
   return truncate(explanation, 200, true);
 };
 
+function isVariantCorrect(queryData): boolean {
+  const query = objParse(queryData);
+  const quiz = getQuizById(allQuizzes, Number(query.questionId));
+  const variant = getVariantById(quiz, Number(query.variantId));
+  return variant.isCorrect;
+};
+
+export function makeIndicator(queryData): string {
+  if (isVariantCorrect(queryData)) {
+    return "✅✅✅✅✅✅";
+  }
+  return "❌❌❌❌❌❌";
+}
+
 export function makeExplanation3({ userId, firstName, queryData }): string {
   const query = objParse(queryData);
   const quiz = getQuizById(allQuizzes, Number(query.questionId));
