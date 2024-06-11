@@ -97,9 +97,9 @@ bot.command("get", async (ctx) => {
 
 
 bot.on("callback_query:data", async (ctx) => {
-  const message_id = ctx.update.callback_query.message.message_id;
   const chat_id = ctx.update.callback_query.message.chat.id;
   const username = ctx.update.callback_query.from.username;
+  const message_id = ctx.update.callback_query.message.message_id;
   const firstName = ctx.update.callback_query.from.first_name;
   const userId = ctx.update.callback_query.from.id;
   const queryData = ctx.update.callback_query.data;
