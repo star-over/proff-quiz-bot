@@ -17,13 +17,13 @@ export type TQuiz = {
   reference?: string | null;
   style?: string | null;
   question: string;
-  answers: TAnswers;
+  variants: TVariants;
 }
 
-export type TAnswers = TAnswer[];
-export type TAnswer = {
+export type TVariants = TVariant[];
+export type TVariant = {
   id: number;
-  answer: string;
+  variant: string;
   isCorrect: boolean;
   proxy?: string;
 }

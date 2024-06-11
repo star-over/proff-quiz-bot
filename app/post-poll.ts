@@ -1,10 +1,10 @@
 import { Context } from "grammy";
 import { extractText } from "./lib/utils.js";
-import { getAnswers, makePollConfig } from "./post-commons.js";
+import { getVariants, makePollConfig } from "./post-commons.js";
 import { TQuiz } from "./quizzes/quiz.js";
 
 export async function postPoll(ctx: Context, quiz: TQuiz) {
-  const { id, topic, question, answers, reference } = quiz;
+  const { id, topic, question, variants, reference } = quiz;
 
   const pollQuestion = [
     `Тема: ${topic}`,
@@ -13,8 +13,8 @@ export async function postPoll(ctx: Context, quiz: TQuiz) {
     `[id:${id}]`,
   ].join("\n");
 
-  const pollAnswers = getAnswers(answers).map((answer) => ({ text: answer }));
-  const pollConfig = makePollConfig(answers, reference)
+  const pollVariants = getVariants(variants).map((variant) => ({ text: variant }));
+  const pollConfig = makePollConfig(variants, reference)
 
-  await ctx.replyWithPoll(pollQuestion, pollAnswers, pollConfig);
+  await ctx.replyWithPoll(pollQuestion, pollVariants, pollConfig);
 }

@@ -15,19 +15,19 @@ function IsCorrect({ isCorrect, children }) {
   )
 }
 
-function Answers({ answers }) {
+function Variants({ variants }) {
   return (
     <section className="max-w-md mx-auto mt-6 text-lg text-zinc-900">
       <ol className="list-inside">
-        {answers
-          ? answers.map(({ proxy, answer, isCorrect }, index: number) => (
+        {variants
+          ? variants.map(({ proxy, variant, isCorrect }, index: number) => (
             <li
               className="leading-5 pt-2"
               key={index}
             >
               <strong>{proxy}</strong>
               <IsCorrect {...{ isCorrect }}>.</IsCorrect>
-              <span className="ml-2">{answer}</span>
+              <span className="ml-2">{variant}</span>
             </li>
           ))
           : null}
@@ -64,7 +64,7 @@ function Info({ botDescription, botName, topic, id }) {
   )
 }
 
-export function Card1({ topic, question, answers, botDescription, botName, id }) {
+export function Card1({ topic, question, variants, botDescription, botName, id }) {
   return (
     <Layout >
       <div
@@ -74,7 +74,7 @@ export function Card1({ topic, question, answers, botDescription, botName, id })
         <div className="max-w-lg min-w-fit mx-auto p-6 rounded-xl shadow-md
         bg-gradient-to-b from-slate-300 via-sky-200 to-blue-200">
           <Question {...{ topic, question }} />
-          <Answers {...{ answers }} />
+          <Variants {...{ variants }} />
           <Info {...{ botDescription, botName, topic, id }} />
         </div>
       </div>

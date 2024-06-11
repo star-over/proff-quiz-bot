@@ -1,13 +1,13 @@
 import { Context } from "grammy";
 import { extractText } from "./lib/utils.js";
-import { getAnswersWithProxies, getLevelText, getMaxAnswerSize, isStyleOne, messageConfig } from "./post-commons.js";
-import { TAnswers, TQuiz } from "./quizzes/quiz.js";
+import { getVariantsWithProxies, getLevelText, getMaxVariantSize, isStyleOne, messageConfig } from "./post-commons.js";
+import { TVariants, TQuiz } from "./quizzes/quiz.js";
 
 export async function postSpoiler(ctx: Context, quiz: TQuiz) {
-  const { id, block, level, topic, question, answers, reference } = quiz;
+  const { id, block, level, topic, question, variants, reference } = quiz;
   const levelText = getLevelText(level);
-  const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
-  const maxAnswerSize: number = getMaxAnswerSize(quiz);
+  const variantsWithProxy: TVariants = getVariantsWithProxies(variants);
+  const maxVariantSize: number = getMaxVariantSize(quiz);
   const explanation = (reference?.length > 0) ? `\n<b>Источник:</b>\n${reference}` : "";
   const chooseText = isStyleOne(quiz)
     ? "Выберете <b>один</b> верный ответ:"
@@ -22,15 +22,15 @@ export async function postSpoiler(ctx: Context, quiz: TQuiz) {
     "",
     `${chooseText}`,
     "",
-    answersWithProxy
-      .map(({ answer, proxy }) => `<b>${proxy}.</b> ${answer}`)
+    variantsWithProxy
+      .map(({ variant, proxy }) => `<b>${proxy}.</b> ${variant}`)
       .join("\n"),
     "<tg-spoiler>",
     "<blockquote>",
     "<b>Ответ:</b>",
-    answersWithProxy
+    variantsWithProxy
       .filter(({ isCorrect }) => isCorrect)
-      .map(({ proxy, answer }) => `<b>${proxy}.</b> ${(answer + " ").padEnd(maxAnswerSize, "⠀")}`)
+      .map(({ proxy, variant }) => `<b>${proxy}.</b> ${(variant + " ").padEnd(maxVariantSize, "⠀")}`)
       .join("\n"),
     `${explanation}`,
     "</blockquote>",

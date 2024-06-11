@@ -1,14 +1,14 @@
 import { Context } from "grammy";
 import { extractText } from "./lib/utils.js";
-import { TAnswers, TQuiz } from "./quizzes/quiz.js";
-import { getAnswersWithProxies, getLevelText, makePollConfig, messageConfig } from "./post-commons.js";
+import { TVariants, TQuiz } from "./quizzes/quiz.js";
+import { getVariantsWithProxies, getLevelText, makePollConfig, messageConfig } from "./post-commons.js";
 
 export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
-  const { id, block, level, topic, question, answers, reference } = quiz;
+  const { id, block, level, topic, question, variants, reference } = quiz;
 
   const levelText: string = getLevelText(level);
-  const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
-  const pollAnswers = answersWithProxy.map(({ proxy }) => ({ text: `${proxy}` }));
+  const variantsWithProxy: TVariants = getVariantsWithProxies(variants);
+  const pollVariants = variantsWithProxy.map(({ proxy }) => ({ text: `${proxy}` }));
 
 
   const questionText = [
@@ -17,8 +17,8 @@ export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
     `${levelText}`,
     `\n<b>${extractText(question)}</b>`,
     "",
-    answersWithProxy
-      .map(({ answer, proxy }) => `<b>${proxy}.</b> ${answer}`)
+    variantsWithProxy
+      .map(({ variant, proxy }) => `<b>${proxy}.</b> ${variant}`)
       .join("\n"),
     "",
     `[id: ${id}]`,
@@ -27,9 +27,9 @@ export async function postMessageProxy(ctx: Context, quiz: TQuiz) {
   const questionMessage = await ctx.reply(questionText, messageConfig);
 
   const pollConfig = {
-    ...makePollConfig(answersWithProxy, reference),
+    ...makePollConfig(variantsWithProxy, reference),
     reply_to_message_id: questionMessage.message_id,
   } as const;
 
-  await ctx.replyWithPoll("Выберете единственный ответ:", pollAnswers, pollConfig);
+  await ctx.replyWithPoll("Выберете единственный ответ:", pollVariants, pollConfig);
 }

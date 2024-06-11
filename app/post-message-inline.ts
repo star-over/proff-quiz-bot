@@ -1,17 +1,17 @@
 import { Context, InlineKeyboard } from "grammy";
 import { extractText, objStringify } from "./lib/utils.js";
-import { TAnswers, TQuiz } from "./quizzes/quiz.js";
-import { getAnswersWithProxies, getLevelText, messageConfig } from "./post-commons.js";
+import { TVariants, TQuiz } from "./quizzes/quiz.js";
+import { getVariantsWithProxies, getLevelText, messageConfig } from "./post-commons.js";
 
 export async function postMessageInline(ctx: Context, quiz: TQuiz) {
-  const { id: questionId, block, level, topic, question, answers } = quiz;
+  const { id: questionId, block, level, topic, question, variants } = quiz;
 
-  const answersWithProxy: TAnswers = getAnswersWithProxies(answers);
-  const correctProxy = answersWithProxy.find(({ isCorrect }) => isCorrect).proxy;
-  const buttonAnswers = answersWithProxy
-    .map(({ proxy, id: answerId }) => [proxy, objStringify({ questionId, answerId, correctProxy })])
+  const variantsWithProxy: TVariants = getVariantsWithProxies(variants);
+  const correctProxy = variantsWithProxy.find(({ isCorrect }) => isCorrect).proxy;
+  const buttonVariants = variantsWithProxy
+    .map(({ proxy, id: variantId }) => [proxy, objStringify({ questionId, variantId, correctProxy })])
 
-  const buttonRow = buttonAnswers
+  const buttonRow = buttonVariants
     .map(([label, data]) => InlineKeyboard.text(label, data));
   const inlineKeyboard = InlineKeyboard.from([buttonRow]);
 
@@ -25,8 +25,8 @@ export async function postMessageInline(ctx: Context, quiz: TQuiz) {
     `${extractText(question)}`,
     "",
     "<b>Варианты ответов:</b>",
-    answersWithProxy
-      .map(({ answer, proxy }) => `${proxy} ${answer}`)
+    variantsWithProxy
+      .map(({ variant, proxy }) => `${proxy} ${variant}`)
       .join("\n"),
     "",
     "<b>Выберете единственный ответ:</b>",

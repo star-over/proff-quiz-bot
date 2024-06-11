@@ -7,22 +7,22 @@ import { numberProxies } from "./lib/strings.js";
 
 export async function postPicturePoll(ctx, quiz) {
 
-  const { question, answers, reference } = quiz;
+  const { question, variants, reference } = quiz;
   const botName = process.env.BOT_NAME as string;
   const botDescription = process.env.BOT_DESCRIPTION as string;
   const pollQuestion = extractText(question);
 
-  const answersWithProxies = answers
-    .map((answer, i) => ({ ...answer, proxy: numberProxies[i] }));
+  const variantsWithProxies = variants
+    .map((variant, i) => ({ ...variant, proxy: numberProxies[i] }));
 
-  const pollAnswersProxy = answersWithProxies
+  const pollVariantsProxy = variantsWithProxies
     .map(({ proxy }) => proxy ?? "");
 
   const cardProps = {
     ...quiz,
     botName,
     botDescription,
-    answers: answersWithProxies,
+    variants: variantsWithProxies,
   };
   const jsx = Card1(cardProps);
   const html = renderToStaticMarkup(jsx);
@@ -31,11 +31,11 @@ export async function postPicturePoll(ctx, quiz) {
 
   const pollConfig = {
     type: "quiz",
-    correct_option_id: answersWithProxies.findIndex(({ isCorrect }) => isCorrect),
+    correct_option_id: variantsWithProxies.findIndex(({ isCorrect }) => isCorrect),
     explanation: reference,
     explanation_parse_mode: "HTML",
     reply_to_message_id: pictureResponse.message_id,
   } as const;
 
-  await ctx.replyWithPoll(pollQuestion, pollAnswersProxy, pollConfig);
+  await ctx.replyWithPoll(pollQuestion, pollVariantsProxy, pollConfig);
 }
