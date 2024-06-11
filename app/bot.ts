@@ -2,7 +2,7 @@ import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom, objParse } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { commonFilters, getAnswerById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, negativePhrases, positivePhrases, postQuiz } from "./post-commons.js";
+import { commonFilters, getAnswerById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, postQuiz } from "./post-commons.js";
 
 const filteredQuizess = commonFilters(allQuizzes);
 const botToken = process.env.BOT_TOKEN as string

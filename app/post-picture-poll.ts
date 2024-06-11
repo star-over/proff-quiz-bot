@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { extractText } from "./lib/utils.js";
 import { render } from "./puppeteer/render.js";
 import { Card1 } from "./templates/card1.js";
-import { numberProxies } from "./post-commons.js";
+import { numberProxies } from "./lib/strings.js";
 
 export async function postPicturePoll(ctx, quiz) {
 

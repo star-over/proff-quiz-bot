@@ -1,3 +1,5 @@
+/* spell-checker: disable */
+
 import { TQuizBundle } from "./quiz";
 
 
