@@ -23,14 +23,14 @@ export async function postSpoiler(ctx: Context, quiz: TQuiz) {
     `${chooseText}`,
     "",
     variantsWithProxy
-      .map(({ variant, proxy }) => `<b>${proxy}.</b> ${variant}`)
+      .map(({ variant, proxy }) => `<b>${proxy}</b> ${variant}`)
       .join("\n"),
     "<tg-spoiler>",
     "<blockquote>",
     "<b>Ответ:</b>",
     variantsWithProxy
       .filter(({ isCorrect }) => isCorrect)
-      .map(({ proxy, variant }) => `<b>${proxy}.</b> ${(variant + " ").padEnd(maxVariantSize, "⠀")}`)
+      .map(({ proxy, variant }) => `<b>${proxy}</b> ${(variant + " ").padEnd(maxVariantSize, "⠀")}`)
       .join("\n"),
     `${explanation}`,
     "</blockquote>",

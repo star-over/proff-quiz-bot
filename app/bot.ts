@@ -2,7 +2,8 @@ import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom, objParse } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { commonFilters, getVariantById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, postQuiz, makeIndicator } from "./post-commons.js";
+import { commonFilters, getVariantById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, postQuiz, makeIndicator, messageConfig } from "./post-commons.js";
+import { makeFakeVariantText, makeMaskedVariants } from "./multi-variants.js";
 
 const filteredQuizess = commonFilters(allQuizzes);
 const botToken = process.env.BOT_TOKEN as string
@@ -112,7 +113,10 @@ bot.on("callback_query:data", async (ctx) => {
 
 bot.on("message", async (ctx) => {
   const quiz: TQuiz = getRandom(filteredQuizess);
-  await postQuiz(ctx, quiz);
+
+  const text = makeMaskedVariants()
+  await ctx.reply(text.toString(), messageConfig);
+  // await postQuiz(ctx, quiz);
 });
 
 bot.start();

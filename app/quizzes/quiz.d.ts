@@ -15,7 +15,7 @@ export type TQuiz = {
   topic: string;
   level?: number;
   reference?: string | null;
-  style?: string | null;
+  style?: "one" | "some";
   question: string;
   variants: TVariants;
 }

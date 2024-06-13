@@ -178,9 +178,9 @@ export function makeExplanation3({ userId, firstName, queryData }): string {
 
 export function commonFilters(quizzes: TQuiz[]): TQuiz[] {
   return quizzes
-    .filter(isStyleOne)
+    .filter((quiz) => !isStyleOne(quiz))
     .filter(({ variants }) => (variants.length >= 2))
-    .filter(({ variants }) => (2 <= variants.length) && (variants.length <= 10))
+  // .filter(({ variants }) => (2 <= variants.length) && (variants.length <= 10))
   // .filter(({ variants }) => (variants.length < 10))
   // .filter(({ variants }) => variants.some(({ variant }) => variant.length > 100))
   // .filter(isVariantSizeGt100)
