@@ -1,5 +1,5 @@
 import { Context, InlineKeyboard } from "grammy";
-import { numberProxies } from "./lib/strings";
+import { numberProxies } from "./lib/strings.js";
 import { extractText, getWeightedRandomItem, objStringify, shuffle } from "./lib/utils";
 import { getQuizById, getVariantsWithProxies, messageConfig } from "./post-commons";
 import { allQuizzes } from "./quizzes/allQuizzes";
