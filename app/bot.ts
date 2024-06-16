@@ -2,13 +2,16 @@ import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom, objParse } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { commonFilters, getVariantById, getQuizById, isStyleOne, makeExplanation2, makeExplanation3, postQuiz, makeIndicator, messageConfig } from "./post-commons.js";
-import { makeFakeVariantText, makeMaskedVariants } from "./multi-variants.js";
+import { commonFilters, makeExplanation3, postQuiz, makeIndicator, messageConfig, makeExplanation4 } from "./post-commons.js";
+import { postMultiVariants } from "./post-multi-variants.js";
 
 const filteredQuizess = commonFilters(allQuizzes);
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
-
+type InlineKeyboardButton = {
+  text: string;
+  callback_data: string;
+}
 
 bot.api.setMyCommands([
   {
@@ -97,25 +100,36 @@ bot.command("get", async (ctx) => {
 });
 
 bot.on("callback_query:data", async (ctx) => {
+  // console.log("🚀 > bot.on > ctx:");
+  // console.dir(ctx, { depth: null });
   const chat_id = ctx.update.callback_query.message.chat.id;
   const username = ctx.update.callback_query.from.username;
   const message_id = ctx.update.callback_query.message.message_id;
   const firstName = ctx.update.callback_query.from.first_name;
   const userId = ctx.update.callback_query.from.id;
-  const queryData = ctx.update.callback_query.data;
+  const payload = ctx.update.callback_query.data;
+  const inline_keyboard = ctx.update.callback_query.message.reply_markup.inline_keyboard
+  const correctProxy = inline_keyboard
+    .flat()
+    .find((button: InlineKeyboardButton) => objParse(button.callback_data)?.isCorrect)
+    ?.text
 
   // await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null }); //hide inline keyboard
-  const text = makeExplanation3({ userId, firstName, queryData });
+
+  const text = makeExplanation4({ userId, firstName, payload });
   await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" });
-  await ctx.answerCallbackQuery({ text: makeIndicator(queryData) }); // remove loading animation
+
+  // await ctx.answerCallbackQuery(); // remove loading animation
+  await ctx.answerCallbackQuery({ text: makeIndicator(payload) }); // remove loading animation
 
 });
 
 bot.on("message", async (ctx) => {
   const quiz: TQuiz = getRandom(filteredQuizess);
 
-  const text = makeMaskedVariants()
-  await ctx.reply(text.toString(), messageConfig);
+  // const text = makeMaskedVariants();
+  // await ctx.reply(text.toString(), messageConfig);
+  await postMultiVariants(ctx, quiz);
   // await postQuiz(ctx, quiz);
 });
 

@@ -6,7 +6,7 @@ import { postMessageProxy } from "./post-message-proxy.js";
 import { postPoll } from "./post-poll.js";
 import { postSpoiler } from "./post-spoiler.js";
 import { TVariants, TQuiz, TQuizBundle } from "./quizzes/quiz.js";
-import { postMessageInline } from "./post-message-inline.js";
+// import { postMessageInline } from "./post-message-inline.js";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { negativePhrases, numberProxies, positivePhrases } from "./lib/strings.js";
 import { assert } from "console";
@@ -21,6 +21,7 @@ function getCorrectVariantIndex(variants: TVariants): number {
   return variants.findIndex(({ isCorrect }) => isCorrect);
 };
 
+
 function getCorrectVariantText(variants: TVariants): string {
   const variantId = getCorrectVariantIndex(variants);
   const variant = variants.at(variantId);
@@ -28,6 +29,14 @@ function getCorrectVariantText(variants: TVariants): string {
   return variant?.proxy
     ? `${variant.proxy}. ${variant.variant}`
     : variant.variant;
+};
+
+
+export function getCorrectVariantsText(variants: TVariants): string {
+  return variants
+    .filter(({ isCorrect }) => isCorrect)
+    .map(({ variant, proxy }) => `${proxy} ${variant}`)
+    .join("\n");
 };
 
 export function getVariantsWithProxies(variants: TVariants): TVariants {
@@ -79,13 +88,13 @@ export async function postQuiz(ctx: Context, quiz: TQuiz): Promise<void> {
   } else if (quiz.variants.length > 10) {
     await postSpoiler(ctx, quiz);
   } else if (isVariantSizeGt100(quiz)) {
-    await postMessageInline(ctx, quiz);
+    // await postMessageInline(ctx, quiz);
   } else if (isQuestionGt250(quiz)) {
     // await postMessagePoll(ctx, quiz);
-    await postMessageInline(ctx, quiz);
+    // await postMessageInline(ctx, quiz);
   } else {
     // await postPoll(ctx, quiz);
-    await postMessageInline(ctx, quiz);
+    // await postMessageInline(ctx, quiz);
   }
 };
 
@@ -130,15 +139,9 @@ export function makeExplanation2(phrase: string, proxy: string, answers: TVarian
   return truncate(explanation, 200, true);
 };
 
-function isVariantCorrect(queryData): boolean {
-  const query = objParse(queryData);
-  const quiz = getQuizById(allQuizzes, Number(query.questionId));
-  const variant = getVariantById(quiz, Number(query.variantId));
-  return variant.isCorrect;
-};
-
-export function makeIndicator(queryData): string {
-  if (isVariantCorrect(queryData)) {
+export function makeIndicator(payload): string {
+  const { isCorrect } = objParse(payload)
+  if (isCorrect) {
     return "✅✅✅✅✅✅";
   }
   return "❌❌❌❌❌❌";
@@ -147,7 +150,7 @@ export function makeIndicator(queryData): string {
 export function makeExplanation3({ userId, firstName, queryData }): string {
   const query = objParse(queryData);
   const quiz = getQuizById(allQuizzes, Number(query.questionId));
-  const variant = getVariantById(quiz, Number(query.variantId));
+  const variant = getVariantById(quiz, 0); //Number(query.variantId)
   const answerText = getCorrectVariantText(quiz.variants);
   const mention = `<a href="tg://user?id=${userId}">${firstName}</a>`;
 
@@ -168,13 +171,43 @@ export function makeExplanation3({ userId, firstName, queryData }): string {
     `${getRandom(negativePhrases)}`,
     "",
     "<b>Ответ был:</b>",
-    `${query.correctProxy} ${answerText}`,
+    `${0} ${answerText}`, //${query.correctProxy}
     "",
     `<b>Источник:</b>`,
     quiz.reference,
     "</tg-spoiler>",
   ].join("\n");
 };
+
+export function makeExplanation4({ userId, firstName, payload }): string {
+  const { questionId, isCorrect, variantsOrder } = objParse(payload);
+  const { variants, reference } = getQuizById(allQuizzes, questionId);
+  const variantsWithProxy: TVariants = getVariantsWithProxies(variants);
+  const answerText = getCorrectVariantsText(variantsWithProxy);
+  const mention = `<a href="tg://user?id=${userId}">${firstName}</a>`;
+
+  if (isCorrect) {
+    return [
+      "✅✅✅✅✅✅",
+      mention,
+      `${getRandom(positivePhrases)}`,
+    ].join("\n");
+  };
+
+  return [
+    "❌❌❌❌❌❌",
+    "<tg-spoiler>",
+    mention,
+    `${getRandom(negativePhrases)}`,
+    "",
+    "<b>Ответ был:</b>",
+    answerText,
+    "",
+    `<b>Источник:</b>`,
+    reference,
+    "</tg-spoiler>",
+  ].join("\n");
+}
 
 export function commonFilters(quizzes: TQuiz[]): TQuiz[] {
   return quizzes
