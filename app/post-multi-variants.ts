@@ -1,9 +1,9 @@
 import { Context, InlineKeyboard } from "grammy";
 import { numberProxies } from "./lib/strings.js";
-import { extractText, getWeightedRandomItem, objStringify, shuffle } from "./lib/utils";
-import { getQuizById, getVariantsWithProxies, messageConfig } from "./post-commons";
-import { allQuizzes } from "./quizzes/allQuizzes";
-import { TQuiz, TVariants } from "./quizzes/quiz";
+import { extractText, getWeightedRandomItem, objStringify, shuffle } from "./lib/utils.js";
+import { getQuizById, getVariantsWithProxies, messageConfig } from "./post-commons.js";
+import { allQuizzes } from "./quizzes/allQuizzes.js";
+import { TQuiz, TVariants } from "./quizzes/quiz.js";
 
 // how many variants show to user to choose
 const variantRates = [
