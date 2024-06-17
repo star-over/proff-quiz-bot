@@ -11,14 +11,18 @@ export function cn(...inputs: any[]) {
   return twMerge(clsx(inputs));
 };
 
-export function extractText(html: string) {
+export function extractText(html: string): string {
   return html.replace(/<[^>]+>/g, '');
 };
 
-export function getRandom(items) {
+export function getRandom<T>(arr: T[]): T {
   // "|" for a kinda "int div"
-  return items[items.length * Math.random() | 0];
+  return arr[arr.length * Math.random() | 0];
 }
+
+export function hasDuplicates(arr: unknown[]): boolean {
+  return arr.length !== new Set(arr).size;
+};
 
 // https://stackoverflow.com/a/1199420/87713
 export function truncate(str: string, n: number, useWordBoundary: boolean) {

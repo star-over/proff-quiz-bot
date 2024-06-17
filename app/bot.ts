@@ -93,7 +93,8 @@ bot.command("get", async (ctx) => {
   const questionId = Number(ctx.match);
   const quizzes = allQuizzes.filter(({ id }) => id === questionId)
   if (quizzes.length > 0) {
-    await postQuiz(ctx, quizzes.at(0));
+    // await postQuiz(ctx, quizzes.at(0));
+    await postMultiVariants(ctx, quizzes.at(0));
   } else {
     await ctx.reply(`Нет вопроса с номером ${ctx.match}`)
   }

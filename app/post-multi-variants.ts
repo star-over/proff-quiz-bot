@@ -1,9 +1,10 @@
 import { Context, InlineKeyboard } from "grammy";
 import { numberProxies } from "./lib/strings.js";
-import { extractText, getWeightedRandomItem, objStringify, shuffle } from "./lib/utils.js";
+import { extractText, getWeightedRandomItem, hasDuplicates, objStringify, shuffle } from "./lib/utils.js";
 import { getQuizById, getVariantsWithProxies, messageConfig } from "./post-commons.js";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { TQuiz, TVariants } from "./quizzes/quiz.js";
+import { assert } from "console";
 
 // how many variants show to user to choose
 const variantRates = [
@@ -24,13 +25,14 @@ function getCorrectVariantText(variants: TVariants): string {
   return variants
     .filter(({ isCorrect }) => isCorrect)
     .map(({ proxy }) => proxy)
-    .join(" ");
+    .join("");
 };
 
 function makeFakeVariantText(variants: TVariants) {
   const proxyCount = getWeightedRandomItem(proxyRates).count;
   const proxyVariants = numberProxies
     .slice(0, variants.length);
+
   return shuffle(proxyVariants)
     .slice(0, proxyCount)
     .sort()
@@ -50,6 +52,8 @@ function makeMaskedVariants(variants: TVariants) {
     };
   };
 
+  // * Assert
+  assert(!hasDuplicates(maskedVariants), "🤡 > post-multi-variants.ts > makeMaskedVariants > Variants not unique", "\n", maskedVariants);
   return maskedVariants;
 }
 
@@ -78,7 +82,7 @@ export async function postMultiVariants(ctx: Context, quiz: TQuiz) {
     `<b>Вопрос:</b> [id: ${id}]`,
     `${extractText(question)}`,
     "",
-    "<i>В вопросе несколько верных вариантов</i> 🎓 🎓 🎓",
+    "🎓 🎓 🎓 <i>В вопросе несколько верных вариантов</i>",
     "<b>Варианты ответов:</b>",
     variantsWithProxy
       .map(({ variant, proxy }) => `${proxy} ${variant}`)
