@@ -34,7 +34,7 @@ export function truncate(str: string, n: number, useWordBoundary: boolean) {
 };
 
 // https://stackoverflow.com/a/73702866/87713
-export function getWeightedRandomItem(items) {
+export function getWeightedRandomItem<T extends { weight: number }>(items: T[]): T {
   const weights = items.reduce((acc, item, i) => {
     acc.push(item.weight + (acc[i - 1] ?? 0));
     return acc;
@@ -43,6 +43,11 @@ export function getWeightedRandomItem(items) {
   return items[weights.findIndex((weight) => weight > random)];
 };
 
+// https://stackoverflow.com/a/44687374/87713
+export function chunk<T>(arr: T[], size: number): T[][] {
+  return [...Array(Math.ceil(arr.length / size))]
+    .map((_, i) => arr.slice(i * size, i * size + size))
+}
 
 export function objStringify(payloadObject: TPayloadObject): string {
   const { questionId, variantsOrder, isCorrect } = payloadObject;

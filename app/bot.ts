@@ -1,8 +1,8 @@
 import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
-import { getRandom, objParse } from "./lib/utils.js";
+import { getRandom } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { commonFilters, makeExplanation3, postQuiz, makeIndicator, messageConfig, makeExplanation4 } from "./post-commons.js";
+import { commonFilters, postQuiz, makeIndicator, messageConfig, makeExplanation4 } from "./post-commons.js";
 import { postMultiVariants } from "./post-multi-variants.js";
 
 const filteredQuizess = commonFilters(allQuizzes);
@@ -50,43 +50,43 @@ bot.command("start", (ctx) => ctx.reply("Отправьте сообщение �
 bot.command("commom", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Общие знания");
   const quiz: TQuiz = getRandom(quizzes);
-  await postQuiz(ctx, quiz);
+  await postMultiVariants(ctx, quiz);
 });
 
 bot.command("capital_planning", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Планирование капитальных вложений");
   const quiz: TQuiz = getRandom(quizzes);
-  await postQuiz(ctx, quiz);
+  await postMultiVariants(ctx, quiz);
 });
 
 bot.command("constr_control", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Строительный контроль");
   const quiz: TQuiz = getRandom(quizzes);
-  await postQuiz(ctx, quiz);
+  await postMultiVariants(ctx, quiz);
 });
 
 bot.command("engineering", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Управление проектированием в капитальном строительстве");
   const quiz: TQuiz = getRandom(quizzes);
-  await postQuiz(ctx, quiz);
+  await postMultiVariants(ctx, quiz);
 });
 
 bot.command("projects", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Управление проектами");
   const quiz: TQuiz = getRandom(quizzes);
-  await postQuiz(ctx, quiz);
+  await postMultiVariants(ctx, quiz);
 });
 
 bot.command("constr_management", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Управление строительством");
   const quiz: TQuiz = getRandom(quizzes);
-  await postQuiz(ctx, quiz);
+  await postMultiVariants(ctx, quiz);
 });
 
 bot.command("pricing", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Ценообразование капитального строительства");
   const quiz: TQuiz = getRandom(quizzes);
-  await postQuiz(ctx, quiz);
+  await postMultiVariants(ctx, quiz);
 });
 
 bot.command("get", async (ctx) => {
@@ -103,26 +103,26 @@ bot.command("get", async (ctx) => {
 bot.on("callback_query:data", async (ctx) => {
   // console.log("🚀 > bot.on > ctx:");
   // console.dir(ctx, { depth: null });
-  const chat_id = ctx.update.callback_query.message.chat.id;
-  const username = ctx.update.callback_query.from.username;
-  const message_id = ctx.update.callback_query.message.message_id;
-  const firstName = ctx.update.callback_query.from.first_name;
-  const userId = ctx.update.callback_query.from.id;
+  const userId = ctx.from.id;
+  const firstName = ctx.from.first_name;
+  const username = ctx.from.username;
+  const reply_to_message_id = ctx.update.callback_query.message.message_id;
   const payload = ctx.update.callback_query.data;
-  const inline_keyboard = ctx.update.callback_query.message.reply_markup.inline_keyboard
-  const correctProxy = inline_keyboard
-    .flat()
-    .find((button: InlineKeyboardButton) => objParse(button.callback_data)?.isCorrect)
-    ?.text
 
   // await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null }); //hide inline keyboard
 
   const text = makeExplanation4({ userId, firstName, payload });
-  await ctx.reply(text, { reply_to_message_id: message_id, parse_mode: "HTML" });
+  const feedback = await ctx.reply(text, { ...messageConfig, reply_to_message_id });
 
   // await ctx.answerCallbackQuery(); // remove loading animation
   await ctx.answerCallbackQuery({ text: makeIndicator(payload) }); // remove loading animation
 
+  setTimeout(() =>
+    ctx.api
+      .deleteMessage(ctx.chat.id, feedback.message_id)
+      .catch(() => { }),
+    30_000 // 30 sec.
+  );
 });
 
 bot.on("message", async (ctx) => {
