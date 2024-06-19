@@ -1,10 +1,10 @@
 import { Context, InlineKeyboard } from "grammy";
 import { numberProxies } from "./lib/strings.js";
-import { chunk, extractText, getWeightedRandomItem, hasDuplicates, objStringify, shuffle } from "./lib/utils.js";
-import { getQuizById, getVariantsWithProxies, messageConfig } from "./post-commons.js";
-import { allQuizzes } from "./quizzes/allQuizzes.js";
+import { chunk, extractText, getWeightedRandomItem, hasDuplicates, objStringify } from "./lib/utils.js";
+import { getVariantsWithProxies, messageConfig } from "./post-commons.js";
 import { TQuiz, TVariants } from "./quizzes/quiz.js";
 import { assert } from "console";
+import _ from "lodash";
 
 // how many variants show to user to choose
 const variantRates = [
@@ -16,11 +16,6 @@ const variantRates = [
 const proxyRates = [
   { count: 1, weight: 3 }, { count: 2, weight: 50 }, { count: 3, weight: 47 },
 ];
-
-const quiz = getQuizById(allQuizzes, 1);
-const { variants } = quiz;
-const variantsWithProxy: TVariants = getVariantsWithProxies(variants);
-
 
 function getCorrectVariantText(variants: TVariants): string {
   return variants
@@ -34,7 +29,7 @@ function makeFakeVariantText(variants: TVariants) {
   const proxyVariants = numberProxies
     .slice(0, variants.length);
 
-  return shuffle(proxyVariants)
+  return _.shuffle(proxyVariants)
     .slice(0, proxyCount)
     .sort()
     .join("");
@@ -47,7 +42,7 @@ function makeMaskedVariants(variants: TVariants) {
 
   // TODO make guard for infinite loop
   while (maskedVariants.length < variantCount) {
-    const fakeVariantText = makeFakeVariantText(variantsWithProxy);
+    const fakeVariantText = makeFakeVariantText(variants);
     if (!maskedVariants.includes(fakeVariantText)) {
       maskedVariants.push(fakeVariantText);
     };
@@ -59,45 +54,43 @@ function makeMaskedVariants(variants: TVariants) {
 }
 
 export async function postMultiVariants(ctx: Context, quiz: TQuiz) {
-  const { id, topic, question, variants } = quiz;
-
+  const { id: questionId, topic, question, variants } = quiz;
   const variantsWithProxy: TVariants = getVariantsWithProxies(variants);
   const variantsOrder: number[] = variantsWithProxy.map(({ id }) => id);
   const maskedVariants = makeMaskedVariants(variantsWithProxy);
 
+  //#region
   const buttonVariants = maskedVariants
     .map((proxy, index) => [
-      proxy, objStringify({ questionId: id, variantsOrder, isCorrect: !Boolean(index) }) // 0 index always is correct
+      proxy, objStringify({ questionId, variantsOrder, isCorrect: !Boolean(index) }) // 0 index always is correct
     ]);
-
-  const inlineButtons = buttonVariants
+  //#endregion
+  //#region
+  const inlineButtons = _.shuffle(buttonVariants)
     .map(([text, payload]) => InlineKeyboard.text(text, payload));
 
-    // TODO make chunk dynamic, depends on buttons count
+  // TODO make chunk dynamic, depends on buttons count
   const inlineKeyboard = InlineKeyboard.from(chunk(inlineButtons, 2));
-
+  //#endregion
+  //#region questionText
   const questionText = [
     // `<b>Блок:</b> ${block}`,
-    "📗 <b>Тема:</b>",
-    `${topic}`,
+    `📗 <b>Тема:</b> ${topic}`,
     // `<b>Уровень:</b> ${"⭐️".repeat(level || 1)}`,
     "",
-    `❓ <b>Вопрос:</b> [id: ${id}]`,
+    `<b>Вопрос:</b> ⁉️ <i>[id: ${questionId}]</i>`,
     `${extractText(question)}`,
     "",
-    "<i>В вопросе несколько верных вариантов</i> 🎓 🎓 🎓",
-    "💬 <b>Варианты ответов:</b>",
+    "<b>Варианты ответов:</b>",
+    "<i>В вопросе несколько верных вариантов</i> ☑️☑️☑️",
+    "",
     variantsWithProxy
       .map(({ variant, proxy }) => `${proxy} ${variant}`)
       .join("\n"),
     "",
     "<b>Выберете единственный ответ:</b>",
   ].join("\n");
+  //#endregion
 
-  await ctx.reply(questionText,
-    {
-      ...messageConfig,
-      reply_markup: inlineKeyboard
-    }
-  );
+  await ctx.reply(questionText, { ...messageConfig, reply_markup: inlineKeyboard });
 }

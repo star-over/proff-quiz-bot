@@ -25,9 +25,9 @@ export function hasDuplicates(arr: unknown[]): boolean {
 };
 
 // https://stackoverflow.com/a/1199420/87713
-export function truncate(str: string, n: number, useWordBoundary: boolean) {
-  if (str.length <= n) { return str; }
-  const subString = str.slice(0, n - 2); // the original check
+export function truncate(str: string, size: number, useWordBoundary: boolean) {
+  if (str.length <= size) { return str; }
+  const subString = str.slice(0, size - 2); // the original check
   return (useWordBoundary
     ? subString.slice(0, subString.lastIndexOf(" "))
     : subString) + "...";
@@ -67,7 +67,3 @@ export function objParse(payload: string): TPayloadObject {
     isCorrect: Boolean(Number(c))
   }
 };
-
-export function shuffle(array) {
-  return array.toSorted(() => Math.random() - 0.5);
-}

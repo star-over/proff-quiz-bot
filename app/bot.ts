@@ -8,10 +8,10 @@ import { postMultiVariants } from "./post-multi-variants.js";
 const filteredQuizess = commonFilters(allQuizzes);
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
-type InlineKeyboardButton = {
-  text: string;
-  callback_data: string;
-}
+// type InlineKeyboardButton = {
+//   text: string;
+//   callback_data: string;
+// }
 
 bot.api.setMyCommands([
   {
@@ -50,43 +50,43 @@ bot.command("start", (ctx) => ctx.reply("Отправьте сообщение �
 bot.command("commom", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Общие знания");
   const quiz: TQuiz = getRandom(quizzes);
-  await postMultiVariants(ctx, quiz);
+  await postQuiz(ctx, quiz);
 });
 
 bot.command("capital_planning", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Планирование капитальных вложений");
   const quiz: TQuiz = getRandom(quizzes);
-  await postMultiVariants(ctx, quiz);
+  await postQuiz(ctx, quiz);
 });
 
 bot.command("constr_control", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Строительный контроль");
   const quiz: TQuiz = getRandom(quizzes);
-  await postMultiVariants(ctx, quiz);
+  await postQuiz(ctx, quiz);
 });
 
 bot.command("engineering", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Управление проектированием в капитальном строительстве");
   const quiz: TQuiz = getRandom(quizzes);
-  await postMultiVariants(ctx, quiz);
+  await postQuiz(ctx, quiz);
 });
 
 bot.command("projects", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Управление проектами");
   const quiz: TQuiz = getRandom(quizzes);
-  await postMultiVariants(ctx, quiz);
+  await postQuiz(ctx, quiz);
 });
 
 bot.command("constr_management", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Управление строительством");
   const quiz: TQuiz = getRandom(quizzes);
-  await postMultiVariants(ctx, quiz);
+  await postQuiz(ctx, quiz);
 });
 
 bot.command("pricing", async (ctx) => {
   const quizzes = filteredQuizess.filter(({ block }) => block === "Ценообразование капитального строительства");
   const quiz: TQuiz = getRandom(quizzes);
-  await postMultiVariants(ctx, quiz);
+  await postQuiz(ctx, quiz);
 });
 
 bot.command("get", async (ctx) => {
@@ -94,7 +94,7 @@ bot.command("get", async (ctx) => {
   const quizzes = allQuizzes.filter(({ id }) => id === questionId)
   if (quizzes.length > 0) {
     // await postQuiz(ctx, quizzes.at(0));
-    await postMultiVariants(ctx, quizzes.at(0));
+    await postQuiz(ctx, quizzes.at(0));
   } else {
     await ctx.reply(`Нет вопроса с номером ${ctx.match}`)
   }
@@ -121,17 +121,15 @@ bot.on("callback_query:data", async (ctx) => {
     ctx.api
       .deleteMessage(ctx.chat.id, feedback.message_id)
       .catch(() => { }),
-    30_000 // 30 sec.
+    10_000
   );
 });
 
 bot.on("message", async (ctx) => {
   const quiz: TQuiz = getRandom(filteredQuizess);
 
-  // const text = makeMaskedVariants();
-  // await ctx.reply(text.toString(), messageConfig);
-  await postMultiVariants(ctx, quiz);
-  // await postQuiz(ctx, quiz);
+  // await postMultiVariants(ctx, quiz);
+  await postQuiz(ctx, quiz);
 });
 
 bot.start();

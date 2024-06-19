@@ -1,6 +1,5 @@
 import { Context } from "grammy";
-import { customKeyboard } from "./keyboard.js";
-import { getRandom, objParse, shuffle, truncate } from "./lib/utils.js";
+import { getRandom, objParse, truncate } from "./lib/utils.js";
 import { postMessagePoll } from "./post-message-poll.js";
 import { postMessageProxy } from "./post-message-proxy.js";
 import { postPoll } from "./post-poll.js";
@@ -10,7 +9,8 @@ import { TVariants, TQuiz, TQuizBundle } from "./quizzes/quiz.js";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { negativePhrases, numberProxies, positivePhrases } from "./lib/strings.js";
 import { assert } from "console";
-
+import { postMultiVariants } from "./post-multi-variants.js";
+import { postMessageInline } from "./post-message-inline.js";
 
 export const messageConfig = {
   parse_mode: "HTML",
@@ -21,7 +21,6 @@ function getCorrectVariantIndex(variants: TVariants): number {
   return variants.findIndex(({ isCorrect }) => isCorrect);
 };
 
-
 function getCorrectVariantText(variants: TVariants): string {
   const variantId = getCorrectVariantIndex(variants);
   const variant = variants.at(variantId);
@@ -30,7 +29,6 @@ function getCorrectVariantText(variants: TVariants): string {
     ? `${variant.proxy}. ${variant.variant}`
     : variant.variant;
 };
-
 
 export function getCorrectVariantsText(variants: TVariants): string {
   return variants
@@ -82,20 +80,24 @@ export function isQuestionGt250(quiz: TQuiz): boolean {
   return (quiz.topic.length + quiz.question.length) > 250;
 }
 
-export async function postQuiz(ctx: Context, quiz: TQuiz): Promise<void> {
-  if (isStyleOne(quiz) === false) {
-    await postSpoiler(ctx, quiz);
-  } else if (quiz.variants.length > 10) {
-    await postSpoiler(ctx, quiz);
-  } else if (isVariantSizeGt100(quiz)) {
-    // await postMessageInline(ctx, quiz);
-  } else if (isQuestionGt250(quiz)) {
-    // await postMessagePoll(ctx, quiz);
-    // await postMessageInline(ctx, quiz);
-  } else {
-    // await postPoll(ctx, quiz);
-    // await postMessageInline(ctx, quiz);
+export async function postQuiz(ctx: Context, quiz: TQuiz) {
+  if (!isStyleOne(quiz)) {
+    return await postMultiVariants(ctx, quiz);
   }
+
+  return await postMessageInline(ctx, quiz);
+
+  // if (quiz.variants.length > 10) {
+  //   await postMultiVariants(ctx, quiz);
+  // }
+
+  // if (isVariantSizeGt100(quiz)) {
+  //   await postMessageInline(ctx, quiz);
+  // }
+  // if (isQuestionGt250(quiz)) {
+  //   await postMessagePoll(ctx, quiz);
+  // }
+  // await postPoll(ctx, quiz);
 };
 
 export function getQuizById(quizzes: TQuizBundle, questionId: number) {
@@ -211,7 +213,7 @@ export function makeExplanation4({ userId, firstName, payload }): string {
 
 export function commonFilters(quizzes: TQuiz[]): TQuiz[] {
   return quizzes
-    .filter((quiz) => !isStyleOne(quiz))
+    // .filter((quiz) => isStyleOne(quiz))
     .filter(({ variants }) => (variants.length >= 2))
   // .filter(({ variants }) => (2 <= variants.length) && (variants.length <= 10))
   // .filter(({ variants }) => (variants.length < 10))
