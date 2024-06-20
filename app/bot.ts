@@ -2,16 +2,11 @@ import { Bot } from "grammy";
 import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
-import { commonFilters, postQuiz, makeIndicator, messageConfig, makeExplanation4 } from "./post-commons.js";
-import { postMultiVariants } from "./post-multi-variants.js";
+import { commonFilters, postQuiz, makeIndicator, messageConfig, makeExplanation4, getQuizById } from "./post-commons.js";
 
 const filteredQuizess = commonFilters(allQuizzes);
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
-// type InlineKeyboardButton = {
-//   text: string;
-//   callback_data: string;
-// }
 
 bot.api.setMyCommands([
   {
@@ -91,44 +86,40 @@ bot.command("pricing", async (ctx) => {
 
 bot.command("get", async (ctx) => {
   const questionId = Number(ctx.match);
-  const quizzes = allQuizzes.filter(({ id }) => id === questionId)
-  if (quizzes.length > 0) {
-    // await postQuiz(ctx, quizzes.at(0));
-    await postQuiz(ctx, quizzes.at(0));
-  } else {
-    await ctx.reply(`Нет вопроса с номером ${ctx.match}`)
+  const quiz = getQuizById(allQuizzes, questionId)
+  if (quiz) {
+    await postQuiz(ctx, quiz);
+    return null;
   }
+
+  await ctx.reply(`Нет вопроса с номером ${ctx.match}`)
 });
 
 bot.on("callback_query:data", async (ctx) => {
-  // console.log("🚀 > bot.on > ctx:");
-  // console.dir(ctx, { depth: null });
   const userId = ctx.from.id;
   const firstName = ctx.from.first_name;
   const username = ctx.from.username;
-  const reply_to_message_id = ctx.update.callback_query.message.message_id;
+  const message_id = ctx.update.callback_query.message.message_id;
   const payload = ctx.update.callback_query.data;
 
-  // await ctx.api.editMessageReplyMarkup(chat_id, message_id, { reply_markup: null }); //hide inline keyboard
+  // hide inline keyboard
+  // await ctx.api.editMessageReplyMarkup(ctx.chat.id, message_id, { reply_markup: null });
 
   const text = makeExplanation4({ userId, firstName, payload });
-  const feedback = await ctx.reply(text, { ...messageConfig, reply_to_message_id });
+  const feedback = await ctx.reply(text, { ...messageConfig, reply_to_message_id: message_id });
 
-  // await ctx.answerCallbackQuery(); // remove loading animation
-  await ctx.answerCallbackQuery({ text: makeIndicator(payload) }); // remove loading animation
+  setTimeout(() => {
+    ctx.api.deleteMessage(ctx.chat.id, feedback.message_id).catch(() => { });
+    ctx.api.deleteMessage(ctx.chat.id, message_id).catch(() => { });
+  }, 30_000);
 
-  setTimeout(() =>
-    ctx.api
-      .deleteMessage(ctx.chat.id, feedback.message_id)
-      .catch(() => { }),
-    10_000
-  );
+  // remove loading animation
+  await ctx.answerCallbackQuery({ text: makeIndicator(payload) });
 });
 
 bot.on("message", async (ctx) => {
   const quiz: TQuiz = getRandom(filteredQuizess);
 
-  // await postMultiVariants(ctx, quiz);
   await postQuiz(ctx, quiz);
 });
 

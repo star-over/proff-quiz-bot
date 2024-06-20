@@ -49,6 +49,11 @@ export function chunk<T>(arr: T[], size: number): T[][] {
     .map((_, i) => arr.slice(i * size, i * size + size))
 }
 
+//https://cestoliv.com/blog/how-to-count-emojis-with-javascript/
+export function visibleLength(str: string): number {
+  return [...new Intl.Segmenter().segment(str)].length
+}
+
 export function objStringify(payloadObject: TPayloadObject): string {
   const { questionId, variantsOrder, isCorrect } = payloadObject;
   const obj = {

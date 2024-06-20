@@ -17,6 +17,26 @@ export const messageConfig = {
   disable_notification: true,
 } as const;
 
+export function getChunkSize(variantsCount: number, maxProxies: number): number {
+  const row = variantsCount > 10 ? 10 : variantsCount;
+  const col = maxProxies > 9 ? 9 : maxProxies;
+  const mapTable = {
+    //  1  2  3  4  5  6  7  8  9
+    1: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    2: [2, 2, 2, 2, 2, 2, 2, 2, 2],
+    3: [3, 3, 3, 3, 3, 3, 3, 3, 3],
+    4: [4, 4, 2, 2, 2, 2, 2, 2, 2],
+    5: [5, 5, 3, 3, 3, 3, 3, 3, 3],
+    6: [3, 3, 3, 3, 3, 3, 3, 3, 3],
+    7: [4, 4, 3, 3, 3, 3, 3, 3, 3],
+    8: [4, 4, 3, 3, 3, 3, 2, 2, 2],
+    9: [3, 3, 3, 3, 3, 3, 3, 3, 3],
+    10: [5, 5, 2, 2, 2, 2, 2, 2, 2],
+  };
+
+  return mapTable[row][col - 1];
+}
+
 function getCorrectVariantIndex(variants: TVariants): number {
   return variants.findIndex(({ isCorrect }) => isCorrect);
 };
@@ -81,6 +101,8 @@ export function isQuestionGt250(quiz: TQuiz): boolean {
 }
 
 export async function postQuiz(ctx: Context, quiz: TQuiz) {
+  await ctx.api.deleteMessage(ctx.chat.id, ctx.message.message_id);
+
   if (!isStyleOne(quiz)) {
     return await postMultiVariants(ctx, quiz);
   }

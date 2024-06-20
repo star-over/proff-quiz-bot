@@ -1,7 +1,7 @@
 import { Context, InlineKeyboard } from "grammy";
 import { numberProxies } from "./lib/strings.js";
-import { chunk, extractText, getWeightedRandomItem, hasDuplicates, objStringify } from "./lib/utils.js";
-import { getVariantsWithProxies, messageConfig } from "./post-commons.js";
+import { chunk, extractText, getWeightedRandomItem, hasDuplicates, objStringify, visibleLength } from "./lib/utils.js";
+import { getChunkSize, getVariantsWithProxies, messageConfig } from "./post-commons.js";
 import { TQuiz, TVariants } from "./quizzes/quiz.js";
 import { assert } from "console";
 import _ from "lodash";
@@ -58,6 +58,10 @@ export async function postMultiVariants(ctx: Context, quiz: TQuiz) {
   const variantsWithProxy: TVariants = getVariantsWithProxies(variants);
   const variantsOrder: number[] = variantsWithProxy.map(({ id }) => id);
   const maskedVariants = makeMaskedVariants(variantsWithProxy);
+  const variantsCount = maskedVariants.length;
+  const maxProxiesText = _.maxBy(maskedVariants, (proxy) => visibleLength(proxy));
+  const maxProxiesSize = visibleLength(maxProxiesText);
+  const chunkSize = getChunkSize(variantsCount, maxProxiesSize);
 
   //#region
   const buttonVariants = maskedVariants
@@ -70,7 +74,7 @@ export async function postMultiVariants(ctx: Context, quiz: TQuiz) {
     .map(([text, payload]) => InlineKeyboard.text(text, payload));
 
   // TODO make chunk dynamic, depends on buttons count
-  const inlineKeyboard = InlineKeyboard.from(chunk(inlineButtons, 2));
+  const inlineKeyboard = InlineKeyboard.from(chunk(inlineButtons, chunkSize));
   //#endregion
   //#region questionText
   const questionText = [

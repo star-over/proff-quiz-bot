@@ -1,12 +1,17 @@
 import { Context, InlineKeyboard } from "grammy";
-import { chunk, extractText, objStringify } from "./lib/utils.js";
+import { chunk, extractText, objStringify, visibleLength } from "./lib/utils.js";
 import { TVariants, TQuiz } from "./quizzes/quiz.js";
-import { getVariantsWithProxies, messageConfig } from "./post-commons.js";
+import { getChunkSize, getVariantsWithProxies, messageConfig } from "./post-commons.js";
+import _ from "lodash";
 
 export async function postMessageInline(ctx: Context, quiz: TQuiz) {
   const { id: questionId, topic, question, variants } = quiz;
   const variantsWithProxy: TVariants = getVariantsWithProxies(variants);
   const variantsOrder: number[] = variantsWithProxy.map(({ id }) => id);
+  const variantsCount = variantsWithProxy.length;
+  const maxProxiesVariant = _.maxBy(variantsWithProxy, ({ proxy }) => visibleLength(proxy));
+  const maxProxiesSize = visibleLength(maxProxiesVariant.proxy)
+  const chunkSize = getChunkSize(variantsCount, maxProxiesSize);
 
   //#region
   const buttonVariants = variantsWithProxy
@@ -19,7 +24,7 @@ export async function postMessageInline(ctx: Context, quiz: TQuiz) {
     .map(([label, data]) => InlineKeyboard.text(label, data));
 
   // TODO make chunk dynamic, depends on buttons count
-  const inlineKeyboard = InlineKeyboard.from(chunk(inlineButtons, 2));
+  const inlineKeyboard = InlineKeyboard.from(chunk(inlineButtons, chunkSize));
   //#endregion
   //#region questionText
   const questionText = [
