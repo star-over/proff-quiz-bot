@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:22 AS base
+FROM --platform=linux/amd64 node:20 AS base
 
 # load PUPPETEER
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
