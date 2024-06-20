@@ -101,7 +101,7 @@ export function isQuestionGt250(quiz: TQuiz): boolean {
 }
 
 export async function postQuiz(ctx: Context, quiz: TQuiz) {
-  await ctx.api.deleteMessage(ctx.chat.id, ctx.message.message_id);
+  // await ctx.api.deleteMessage(ctx.chat.id, ctx.message.message_id);
 
   if (!isStyleOne(quiz)) {
     return await postMultiVariants(ctx, quiz);
