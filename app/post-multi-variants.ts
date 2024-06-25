@@ -82,11 +82,11 @@ export async function postMultiVariants(ctx: Context, quiz: TQuiz) {
     `📗 <b>Тема:</b> ${topic}`,
     // `<b>Уровень:</b> ${"⭐️".repeat(level || 1)}`,
     "",
-    `<b>Вопрос:</b> ⁉️ <i>[id: ${questionId}]</i>`,
+    `<b>Вопрос:</b> <i>[id: ${questionId}]</i>`,
     `${extractText(question)}`,
     "",
     "<b>Варианты ответов:</b>",
-    "<i>В вопросе несколько верных вариантов</i> ☑️☑️☑️",
+    "<i>В вопросе несколько верных вариантов</i>‼️",
     "",
     variantsWithProxy
       .map(({ variant, proxy }) => `${proxy} ${variant}`)

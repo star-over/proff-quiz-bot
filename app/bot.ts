@@ -3,42 +3,13 @@ import { allQuizzes } from "./quizzes/allQuizzes.js";
 import { getRandom } from "./lib/utils.js";
 import { TQuiz } from "./quizzes/quiz.js";
 import { commonFilters, postQuiz, makeIndicator, messageConfig, makeExplanation4, getQuizById } from "./post-commons.js";
+import { commands } from "./commands.js";
 
 const filteredQuizess = commonFilters(allQuizzes);
 const botToken = process.env.BOT_TOKEN as string
 const bot = new Bot(botToken);
 
-bot.api.setMyCommands([
-  {
-    command: "constr_management",
-    description: "Управление строительством",
-  },
-  {
-    command: "commom",
-    description: "Общие знания",
-  },
-  {
-    command: "capital_planning",
-    description: "Планирование КВ",
-  },
-  {
-    command: "constr_control",
-    description: "Строй контроль",
-  },
-  {
-    command: "engineering",
-    description: "Управление ПИР",
-  },
-  {
-    command: "pricing",
-    description: "Ценообразование КС",
-  },
-  {
-    command: "projects",
-    description: "Проекты",
-  },
-])
-
+bot.api.setMyCommands(commands)
 
 bot.command("start", (ctx) => ctx.reply("Отправьте сообщение боту чтобы получить случайный вопрос по выбранной теме"));
 
@@ -111,7 +82,7 @@ bot.on("callback_query:data", async (ctx) => {
   setTimeout(() => {
     ctx.api.deleteMessage(ctx.chat.id, feedback.message_id).catch(() => { });
     ctx.api.deleteMessage(ctx.chat.id, message_id).catch(() => { });
-  }, 30_000);
+  }, 60_000);
 
   // remove loading animation
   await ctx.answerCallbackQuery({ text: makeIndicator(payload) });

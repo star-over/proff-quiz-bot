@@ -1,30 +1,30 @@
 export const commands = [
   {
+    command: "constr_management",
+    description: "Управление строительством",
+  },
+  {
     command: "commom",
     description: "Общие знания",
   },
   {
     command: "capital_planning",
-    description: "Планирование капитальных вложений",
+    description: "Планирование КВ",
   },
   {
-    command: "construction_control",
-    description: "Строительный контроль",
+    command: "constr_control",
+    description: "Строй контроль",
   },
   {
     command: "engineering",
-    description: "Управление проектированием в капитальном строительстве",
-  },
-  {
-    command: "projects",
-    description: "Управление проектами",
-  },
-  {
-    command: "construction_management",
-    description: "Управление строительством",
+    description: "Управление ПИР",
   },
   {
     command: "pricing",
-    description: "Ценообразование капитального строительства",
+    description: "Ценообразование КС",
+  },
+  {
+    command: "projects",
+    description: "Проекты",
   },
 ]
